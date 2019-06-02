@@ -1,4 +1,4 @@
-# 简单的博客记录
+## 一个前端的磕磕碰碰
 
 搭建 hexo 环境参考：https://hexo.io/zh-cn/docs/deployment.html
 
