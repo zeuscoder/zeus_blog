@@ -8,6 +8,6 @@ categories: web
 <!-- more -->
 
 <div align="center">
-![boxModel](http://oqkd33ypt.bkt.clouddn.com/web-roadMap.png)
+![boxModel](https://cloud-minapp-11144.cloud.ifanrusercontent.com/1hXSk6T8Wc5ae20G.png)
 本图片转载自<a href="https://github.com/kamranahmedse/developer-roadmap">kamranahmedse</a>
 </div>

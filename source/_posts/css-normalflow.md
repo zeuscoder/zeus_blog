@@ -30,7 +30,7 @@ categories: web
 在一个文档中，每个元素都被表示为一个矩形的盒子。在CSS中，则使用标准盒模型来描述这些矩形盒子。  
 这个模型描述了元素所占空间的内容。每个盒子有四个边：__外边距边__，__边框边__，__内填充边__与__内容边__。
 <div align="center">
-![boxModel](http://oqkd33ypt.bkt.clouddn.com/boxmodel.png)
+![boxModel](https://cloud-minapp-11144.cloud.ifanrusercontent.com/1hXSfs6849evUXER.png)
 </div>
 其中元素的 __box-sizing__ 属性决定了该元素宽度和高度的计算方式。
 ```CSS
@@ -70,7 +70,7 @@ height = border + padding + 内容height。
 <div class="bottom"></div>
 ```
 <div align="center">
-![boxModel](http://oqkd33ypt.bkt.clouddn.com/cssMargin-1.png)
+![boxModel](https://cloud-minapp-11144.cloud.ifanrusercontent.com/1hXSfs0GMaiwwGe6.png)
 </div>
 ### 块级父元素与其第一个／最后一个子元素
 如果块级元素中，不存在 __padding-top__ | __border-top__ | __inline content__ | __清除浮动__ 这四个属性，那么这个块级元素和其第一个子元素就会发生上边距合并现象。  
@@ -89,7 +89,7 @@ height = border + padding + 内容height。
 </div>
 ```
 <div align="center">
-![boxModel](http://oqkd33ypt.bkt.clouddn.com/cssMargin-2.png)
+![boxModel](https://cloud-minapp-11144.cloud.ifanrusercontent.com/1hXSfsl2BV0BAfOg.png)
 </div>
 ### 空块元素
 如果存在一个空的块级元素，其 border | padding | inline-content | height | min-height 都不存在时，此时元素的上下边距中间没有任何间隔，该元素上下边距 margin-top 与 margin-bottom 将会合并。

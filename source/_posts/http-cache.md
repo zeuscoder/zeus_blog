@@ -45,13 +45,13 @@ HTTP报文就是浏览器和服务器间通信时发送及响应的数据块。
 ### 强制缓存
 强制缓存：如果缓存生效，则不需要再与服务器发生交互。
 <div align="center">
-![cache-force](http://oqkd33ypt.bkt.clouddn.com/cache-force.png)
+![cache-force](https://cloud-minapp-11144.cloud.ifanrusercontent.com/1hXSfsH7GgFrTYNo.png)
 </div>   
 
 ### 对比缓存
 对比缓存：不管缓存是否生效，都需要与服务端发生交互。
 <div align="center">
-![cache-force](http://oqkd33ypt.bkt.clouddn.com/cache-compair.png)
+![cache-force](https://cloud-minapp-11144.cloud.ifanrusercontent.com/1hXSfsNBHgVfKSz8.png)
 </div>  
 服务端在进行标识比较后，只返回header部分，通过状态码告知客户端使用缓存，不需要将报文主体部分返回客户端。
 
@@ -64,8 +64,8 @@ HTTP报文就是浏览器和服务器间通信时发送及响应的数据块。
 HTTP/1.1定义的 Cache-Control 头用来区分对缓存机制的支持情况，请求头和响应头都支持这个属性。通过它提供的不同的值来定义缓存策略。
 <span style="color: red">注意：在__请求__和__响应__报文的首部都支持 Cache-Control ，要学会区分 Cache-Control 的缓存策略是定义在请求还是响应。</span>
 <div align="center">
-![cache-control-request](http://oqkd33ypt.bkt.clouddn.com/cache-control-request.png)
-![cache-control-request](http://oqkd33ypt.bkt.clouddn.com/cache-control-response.png)
+![cache-control-request](https://cloud-minapp-11144.cloud.ifanrusercontent.com/1hXSfsuXAnyvU5TN.png)
+![cache-control-request](https://cloud-minapp-11144.cloud.ifanrusercontent.com/1hXSfsifCpx34tny.png)
 </div>
 #### 控制可执行缓存的对象的指令
 ##### no-store指令（请求&响应）
