@@ -71,3 +71,6 @@ deploy:
   type: git
   repo: https://github.com/zeuscoder/zeuscoder.github.io.git
   branch: master
+
+marked: 
+  breaks: false
