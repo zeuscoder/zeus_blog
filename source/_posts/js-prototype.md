@@ -1,5 +1,5 @@
 ---
-title: JS：原型与原型链
+title: JS：简述原型与原型链
 date: 2019-06-02 17:55:37
 tags: JavaScript
 categories: web
@@ -389,7 +389,35 @@ person.__proto__ === person.constructor.prototype ==== Person.prototype ==== Obj
     create == Object.create
 ```
 
+2. Class(ES6)
+
+Class 只是语法糖，其语法与 JAVA 类的语法相似，更像面向对象编程。（JS 越来越像 JAVA 了）
+
+```JavaScript
+    // ES6 的 class
+    class Person {
+        constructor(name) {
+            this.name = name
+        }
+
+        dating() {
+            console.log('I love u')
+        }
+    }
+
+    // typeof Person === 'function'，Person 实际上就是构造函数
+    // Person.prototype.constructor === Person
+    // class 的 methods 都是定义在 class 的 prototype 上
+```
+
+* super: 调用父类的方法，this 指向子类或子类对象。
+* static：类的静态方法。
+* extends：类的继承。
+* #： 私有属性。
+* new.target: new 的声明对象。
+
 ### 小结
 
 参考文章：
+
 《Javascript高级程序设计》第六章：面向对象的程序设计 P138-P172
