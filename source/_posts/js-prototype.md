@@ -5,12 +5,12 @@ tags: JavaScript
 categories: web
 ---
 
-以小白的角度来看，搞懂**原型（prototype）和原型链**，从 *JavaScript 面向对象的程序设计* 思想开始可能会比较容易入手。
+搞懂**原型（prototype）和原型链**，从 *JavaScript 面向对象的程序设计* 思想开始可能会比较容易入手。
+<!-- more -->
 
 1. 了解原型和原型链的概念（What）
 2. 使用原型和原型链的方式（How）
 3. 明白原型和原型链的用处（Why）
-<!-- more -->  
 
 ### 浓缩版知识点
 
@@ -375,7 +375,14 @@ person.__proto__ === person.constructor.prototype ==== Person.prototype ==== Obj
 
 #### 扩展点
 
-1. Object.create
+1. new
+
+* 创建一个空对象，这个对象将作为执行 new 构造函数（）之后，之后返回的对象实例
+* 将上面创建的空对象的原型（__proto__），指向构造函数的 prototype 属性
+* 将上面创建的空对象赋值给构造函数内部的 this，并执行构造函数逻辑
+* 根据构造函数执行逻辑，返回第一步创建的对象或者构造函数的显式返回值
+
+2. Object.create
 
 ```JavaScript
     // Object.create 是继承中的原型式继承模式的规范写法
@@ -389,7 +396,7 @@ person.__proto__ === person.constructor.prototype ==== Person.prototype ==== Obj
     create == Object.create
 ```
 
-2. Class(ES6)
+3. Class(ES6)
 
 Class 只是语法糖，其语法与 JAVA 类的语法相似，更像面向对象编程。（JS 越来越像 JAVA 了）
 
@@ -416,8 +423,102 @@ Class 只是语法糖，其语法与 JAVA 类的语法相似，更像面向对�
 * #： 私有属性。
 * new.target: new 的声明对象。
 
+4. 手写 call、apply 和 bind 函数
+
+两个关键点：
+
+* 不传入第一个参数，那么上下文默认为 window
+* 改变了 this 指向，让新的对象可以执行该函数，并能接受参数
+
+call 函数
+
+call() 方法使用一个指定的 this 值和单独给出的一个或多个参数来调用一个函数。
+
+```JavaScript
+    Function.prototype.mycall = function(context) {
+        if (typeof this !== 'function') {
+            throw new TypeError('Error')
+        }
+
+        // 指定为 null 和 undefined 的 context 值会自动指向全局对象
+        context = context || window
+        context.fn = this
+
+        const args = [...arguments].slice(1)
+        const result = context.fn(...args)
+
+        delete context.fn
+        return result
+    }
+
+    // 实现分析
+    // 首先 context 为可选参数，如果不传的话默认上下文为 window
+    // 接下来给 context 创建一个 fn 属性，并将值设置为需要调用的函数
+    // 因为 call 可以传入多个参数作为调用函数的参数，所以需要将参数剥离出来
+    // 然后调用函数并将对象上的函数删除
+    // KEY：本质就是用传入的对象调用这个函数
+```
+
+apply 函数
+
+apply() 方法调用一个具有给定this值的函数，以及作为一个数组（或类似数组对象）提供的参数。
+
+```JavaScript
+    Function.prototype.mycall = function(context) {
+        if (typeof this !== 'function') {
+            throw new TypeError('Error')
+        }
+
+        // 指定为 null 和 undefined 的 context 值会自动指向全局对象
+        context = context || window
+        context.fn = this
+
+        let result
+        // 处理参数和 call 有区别
+        if (arguments[1]) {
+            result = context.fn(...arguments[1])
+        } else {
+            result = context.fn()
+        }
+
+        delete context.fn
+        return result
+    }
+```
+
+bind 函数
+
+bind()方法创建一个新的函数，在调用时设置this关键字为提供的值。并在调用新函数时，将给定参数列表作为原函数的参数序列的前若干项。
+
+```JavaScript
+    Function.prototype.mybind = function(context) {
+        if (typeof this !== 'function') {
+            throw new TypeError('Error')
+        }
+
+        const _this = this
+        const args = [...arguments].slice(1)
+  
+        // 返回一个函数
+        return function F() {
+            // 因为返回了一个函数，我们可以 new F()，所以需要判断
+            if (this instanceof F) {
+                return new _this(...args, ...arguments)
+            }
+
+            return _this.apply(context, args.concat(...arguments))
+        }
+    }
+
+    // bind 返回了一个函数，对于函数来说有两种方式调用，一种是直接调用，一种是通过 new 的方式，
+    // 对于直接调用来说，这里选择了 apply 的方式实现，但是对于参数需要注意以下情况：因为 bind 可以实现类似这样的代码 f.bind(obj, 1)(2)，所以我们需要将两边的参数拼接起来，于是就有了这样的实现 args.concat(...arguments)
+    // 最后来说通过 new 的方式，在之前的章节中我们学习过如何判断 this，对于 new 的情况来说，不会被任何方式改变 this，所以对于这种情况我们需要忽略传入的 this
+```
+
 ### 小结
 
 参考文章：
 
 《Javascript高级程序设计》第六章：面向对象的程序设计 P138-P172
+
+<a href="https://juejin.im/book/5bdc715fe51d454e755f75ef/section/5bdd0d8e6fb9a04a044073fe">手写 call、apply 及 bind 函数</a>

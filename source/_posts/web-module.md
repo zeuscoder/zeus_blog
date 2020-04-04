@@ -12,7 +12,7 @@ categories: web
 
 ### 模块化设计
 
-模块化设计（Modular Design）：模块化设计主要有以下方式：
+模块化设计（Modular Design）的历史进程主要有以下方式：
 
 1. IIFE
 2. CommonJS
@@ -283,6 +283,8 @@ UMD的实现：
     }));
 ```
 
-参考文章：<br>
-[1] <a href="https://mp.weixin.qq.com/s/a_mI5w5bCxrvHrhogRkKVQ">从 IIFE 聊到 Babel 带你深入了解前端模块化发展体系</a><br>
-[2] <a href="http://es6.ruanyifeng.com/#docs/module-loader">Module 的加载实现</a><br>
+参考文章：
+
+[1] <a href="https://mp.weixin.qq.com/s/a_mI5w5bCxrvHrhogRkKVQ">从 IIFE 聊到 Babel 带你深入了解前端模块化发展体系</a>
+
+[2] <a href="http://es6.ruanyifeng.com/#docs/module-loader">Module 的加载实现</a>
