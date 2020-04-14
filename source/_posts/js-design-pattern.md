@@ -675,6 +675,9 @@ class DeveloperObserver extends Observer {
 ```
 
 参考文章：
+
 [揭秘前端设计模式（上）](https://gitbook.cn/gitchat/column/5c91c813968b1d64b1e08fde/topic/5cbbf556bbbba80861a35c6e)
+
 [揭秘前端设计模式（下）](https://gitbook.cn/gitchat/column/5c91c813968b1d64b1e08fde/topic/5cbbf575bbbba80861a35c6f)
+
 [JavaScript 设计模式核⼼原理与应⽤实践](https://juejin.im/book/5c70fc83518825428d7f9dfb/section/5c8bb9a3f265da2d8410cb7e)

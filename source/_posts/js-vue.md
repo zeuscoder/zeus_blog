@@ -647,5 +647,14 @@ export function genComment (comment: ASTText): string {
 }
 ```
 
+#### 挂载真实 DOM
+
+_update
+
+#### 全局篇
+
+![patch]](/images/js-vue/new-vue.png)
+
 参考文章：
+
 [深入浅出 Vue.js-刘博文](.)
