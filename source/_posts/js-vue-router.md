@@ -898,7 +898,7 @@ const route = parent.$route
 而这个 `parent` 实例的 `$route` 是在 `src/install.js` 中定义的：
 
 ```Javascript
-Object.defineProperty(Vue.prototype, `render`, {
+Object.defineProperty(Vue.prototype, `$route`, {
     get () { return this._routerRoot._route }
 })
 ```
@@ -950,5 +950,4 @@ updateRoute (route: Route) {
 本文主要参考了 [Vue.js 技术揭秘](https://ustbhuangyi.github.io/vue-analysis/v2/vue-router/router.html#%E6%80%BB%E7%BB%93)，再加上自己的一点理解和注释。
 
 参考文章：
-
 [Vue.js 技术揭秘](https://ustbhuangyi.github.io/vue-analysis/v2/vue-router/router.html#%E6%80%BB%E7%BB%93)
