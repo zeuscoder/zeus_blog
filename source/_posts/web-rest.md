@@ -29,7 +29,7 @@ URL 是__资源__的唯一标识符。<br>
 URL 定位资源，用 HTTP 动词（GET, POST，PUT， DELETE）描述操作。<br>
 URL 只使用__名词__来指定资源，原则上不使用动词。
 
-![boxModel](https://cloud-minapp-11144.cloud.ifanrusercontent.com/1hXSfs5v2jspKll4.png)
+![boxModel](/images/web-rest/rest-transfer.png)
 
 ### RESTful
 

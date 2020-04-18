@@ -12,6 +12,8 @@ Vue 是一款**渐进式**的 Javascript 框架（Just a view library）。
 <img src="/images/js-vue/vue.png" alt="渐进式框架" width="300" height="300" align="center" />
 <!-- ![渐进式框架](/images/js-vue/vue.png) -->
 
+***
+
 接下来我们会从**数据响应**、**虚拟 DOM**、**模板编译**三个方面分析 Vue 源码。
 
 #### 数据响应

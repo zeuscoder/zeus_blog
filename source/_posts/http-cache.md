@@ -37,15 +37,18 @@ HTTP报文就是浏览器和服务器间通信时发送及响应的数据块。
 
 ### 报文构成
 
-报文信息主要分为两部分：   
-1 Header：包含属性的__首部__，附加信息（cookie，缓存信息）与缓存相关的规则信息，均包含在header中。   
-2 Body：包含数据的__主体__，HTTP请求真正想要传输的部分。   
+报文信息主要分为两部分：
 
-小总结：缓存的内容是主体，缓存的方法在首部。   
+1 Header：包含属性的__首部__，附加信息（cookie，缓存信息）与缓存相关的规则信息，均包含在header中。
+
+2 Body：包含数据的__主体__，HTTP请求真正想要传输的部分。
+
+小总结：缓存的内容是主体，缓存的方法在首部。
 
 ## 缓存操作的目标
 
-常见的HTTP缓存只能存储GET响应，缓存的关键主要包括 request method 和目标URI。   
+常见的HTTP缓存只能存储GET响应，缓存的关键主要包括 request method 和目标URI。
+
 普遍的缓存案例：
 
 + 一个检索请求的成功响应: 状态码：200，一个包含例如HTML文档，图片，或者文件的响应
@@ -62,16 +65,14 @@ HTTP报文就是浏览器和服务器间通信时发送及响应的数据块。
 
 强制缓存：如果缓存生效，则不需要再与服务器发生交互。
 
-<div align="center">
-![cache-force](https://cloud-minapp-11144.cloud.ifanrusercontent.com/1hXSfsH7GgFrTYNo.png)
-</div>   
+![cache-force](/images/http-cache/cache-force.png)
 
 ### 对比缓存
 
 对比缓存：不管缓存是否生效，都需要与服务端发生交互。
-<div align="center">
-![cache-force](https://cloud-minapp-11144.cloud.ifanrusercontent.com/1hXSfsNBHgVfKSz8.png)
-</div>  
+
+![cache-compair](/images/http-cache/cache-compair.png)
+
 服务端在进行标识比较后，只返回header部分，通过状态码告知客户端使用缓存，不需要将报文主体部分返回客户端。
 
 小总结：两类缓存规则可以同时存在，强制缓存优先级高于对比缓存，也就是说，当执行强制缓存的规则时，如果缓存生效，直接使用缓存，不再执行对比缓存规则。
@@ -83,17 +84,18 @@ HTTP报文就是浏览器和服务器间通信时发送及响应的数据块。
 ### Cache-Control头
 
 HTTP/1.1定义的 Cache-Control 头用来区分对缓存机制的支持情况，请求头和响应头都支持这个属性。通过它提供的不同的值来定义缓存策略。
+
 <span style="color: red">注意：在__请求__和__响应__报文的首部都支持 Cache-Control ，要学会区分 Cache-Control 的缓存策略是定义在请求还是响应。</span>
-<div align="center">
-![cache-control-request](https://cloud-minapp-11144.cloud.ifanrusercontent.com/1hXSfsuXAnyvU5TN.png)
-![cache-control-request](https://cloud-minapp-11144.cloud.ifanrusercontent.com/1hXSfsifCpx34tny.png)
-</div>
+
+![cache-control-request](/images/http-cache/cache-control-request.png)
+
+![cache-control-response](/images/http-cache/cache-control-response.png)
 
 #### 控制可执行缓存的对象的指令
 
 ##### no-store指令（请求&响应）
 
-```
+```Javascript
 Cache-Control：no-store
 ```
 
@@ -103,7 +105,7 @@ Cache-Control：no-store
 
 ##### public指令（响应）
 
-```
+```Javascript
 Cache-Control：public
 ```
 
@@ -111,7 +113,7 @@ Cache-Control：public
 
 ##### private指令（响应）
 
-```
+```Javascript
 Cache-Control：private
 ```
 
@@ -119,10 +121,12 @@ Cache-Control：private
 
 ##### no-cache指令（请求&响应）---对比缓存
 
-```
+```Javascript
 Cache-Control：no-cache
 ```
-在释放缓存服务器的缓存内容前向服务端源地址发送请求以验证缓存是否有效。使用 no-cache 指令的目的是为了防止从缓存中返回过期的资源。   
+
+在释放缓存服务器的缓存内容前向服务端源地址发送请求以验证缓存是否有效。使用 no-cache 指令的目的是为了防止从缓存中返回过期的资源。
+
 请求包含 no-cache：客户端将不会接收缓存过的响应，过程参照对比缓存。
 响应包含 no-cache：缓存服务器不能对资源进行缓存。
 
@@ -130,45 +134,51 @@ Cache-Control：no-cache
 
 ##### max-age指令（请求&响应）---响应Date
 
-```
+```Javascript
 Cache-Control: max-age=604800 // 一周
 ```
+
 请求包含 max-age：缓存资源的缓存时间 < max-age指定时间 ? 直接获取缓存资源 : 缓存服务器将请求转发给服务器。
 响应包含 max-age：响应的 must-revalidate 和 Expires 将失效，max-age指定时间 = 资源缓存的期限。一旦超过时间，资源将从缓存服务器移除。
 
 ##### min-fresh指令（请求）
 
-```
+```Javascript
 Cache-Control: min-fresh=60 // 一分钟
 ```
+
 min-fresh指令：缓存资源的能缓存剩余时间(新鲜度) > min-fresh指定时间 ? 直接获取缓存资源 : 缓存服务器将请求转发给服务器。
 
 ##### max-stale指令（请求）
 
-```
+```Javascript
 Cache-Control: max-stale=60 // 一分钟
 ```
+
 max-stale指令：缓存资源的过期时间 < max-stale指定时间 ? 直接获取缓存资源 : 缓存服务器将请求转发给服务器。
 
 ##### only-if-cached指令（请求）
 
-```
+```Javascript
 Cache-Control: only-if-cached
 ```
+
 only-if-cached指令：客户端仅在缓存服务器本地缓存目标资源的情况下才会要求返回。即缓存服务器有缓存就直接拿缓存，没缓存就访问源服务器。
 
 ##### must-revalidate指令（响应）---对比缓存
 
-```
+```Javascript
 Cache-Control：must-revalidate
 ```
+
 must-revalidate指令：代理会向源服务器再次验证即将返回的响应缓存目前是否仍然有效。同时会忽略请求的max-stale指令。
 
 ##### no-transform指令（请求&响应）
 
-```
+```Javascript
 Cache-Control: no-transform
 ```
+
 no-transform指令：缓存都不能改变实体主体的媒体类型，防止缓存或代理压缩图片等类似操作。
 
 ### Last-Modified（响应）|  If-Modified-Since（请求） ---对比缓存
@@ -184,9 +194,15 @@ If-None-Match：再次请求服务器时，通过此字段通知服务器客户�
 Etag === If-None-Match ? 304使用缓存资源 : 200重新访问资源
 
 参考文章：
+
 [MDN HTTP缓存](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Caching_FAQ)
+
 [图解HTTP](https://book.douban.com/subject/25863515/)
+
 [彻底弄懂HTTP缓存机制及原理](http://www.cnblogs.com/chenqf/p/6386163.html)
+
 [彻底弄懂 HTTP 缓存机制](http://www.tuicool.com/articles/zUZnUre)
+
 掌握 HTTP 缓存——从请求到响应过程的一切（上）
+
 掌握 HTTP 缓存——从请求到响应过程的一切（下）
