@@ -486,4 +486,5 @@ _withCommit (fn) {
 其余的 API 再做详细分析。
 
 参考文章：
+
 [Vue.js 技术揭秘](https://ustbhuangyi.github.io/vue-analysis/v2/vuex/init.html#store-%E5%AE%9E%E4%BE%8B%E5%8C%96)

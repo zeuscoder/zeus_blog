@@ -253,6 +253,6 @@ Event Loop 执行顺序如下所示：
 * 当执行完所有微任务后，如有必要会渲染页面
 * 然后开始下一轮 Event Loop，执行宏任务中的异步代码，也就是 setTimeout 中的回调函数
 
-微任务包括 process.nextTick ，promise ，MutationObserver，其中 process.nextTick 为 Node 独有。
+微任务包括 [`process.nextTick`](https://nodejs.dev/understanding-process-nexttick/) ，`promise` ，[`MutationObserver`](https://developer.mozilla.org/zh-CN/docs/Web/API/MutationObserver)，其中 process.nextTick 为 Node 独有。
 
-宏任务包括 script ， setTimeout ，setInterval ，setImmediate ，I/O ，UI rendering。
+宏任务包括 `script` ， `setTimeout` `，setInterval` ，`setImmediate` ，`I/O` ，`UI rendering`。

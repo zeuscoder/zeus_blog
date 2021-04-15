@@ -1,5 +1,5 @@
 ---
-title: 2017：前端学习目标
+title: 前端学习目标
 date: 2017-05-10 09:54:24
 categories: web
 ---
@@ -8,8 +8,8 @@ categories: web
 <!-- more -->
 
 <div align="center">
-![2017-road-map](/images/web-roadMap/2017.png)
-本图片转载自 2017 [kamranahmedse](https://github.com/kamranahmedse/developer-roadmap)
+![2021-road-map](/images/web-roadMap/2021.png)
+本图片转载自 2021 [kamranahmedse](https://github.com/kamranahmedse/developer-roadmap)
 </div>
 
 ***
@@ -17,4 +17,11 @@ categories: web
 <div align="center">
 ![2019-road-map](/images/web-roadMap/2019.png)
 本图片转载自 2019 [kamranahmedse](https://github.com/kamranahmedse/developer-roadmap)
+</div>
+
+***
+
+<div align="center">
+![2017-road-map](/images/web-roadMap/2017.png)
+本图片转载自 2017 [kamranahmedse](https://github.com/kamranahmedse/developer-roadmap)
 </div>

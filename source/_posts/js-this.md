@@ -179,4 +179,7 @@ console.log(obj1.a) // 2
 > new 绑定修改了 bind 绑定中的 this，因此 new 绑定的优先级比显式 bind 绑定更高。
 
 参考文章:
+
 [一网打尽 this，对执行上下文说 Yes](https://gitbook.cn/gitchat/column/5c91c813968b1d64b1e08fde/topic/5c99a854ccb24267c1d0194f)
+
+[this MDN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/this)

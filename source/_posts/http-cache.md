@@ -10,9 +10,15 @@ categories: web
 引用自 [MDN](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Caching_FAQ) 的一段话。
 <!-- more -->
 
+***
+
+划重点：1.0 的 `Expires`、1.1 的 `Cache-Control` 和协商缓存的两对`[Etag, If-None-Match]`、`[Last-Modified, If-Modified-Since]`
+
+***
+
 ## HTTP缓存
 
-缓存：①是指__代理服务器__或__客户端本地磁盘内__保存的资源副本（拷贝），并在下次请求该资源时提供该资源副本的__技术__。②当web缓存发现请求的资源已经被存储，它会拦截请求，返回该资源的拷贝，而不会去源服务器重新下载。
+缓存：① 是指**代理服务器（from http）** 或 **客户端本地磁盘（from memory）** 内保存的资源副本（拷贝），并在下次请求该资源时提供该资源副本的__技术__。② 当 web 缓存发现请求的资源已经被存储，它会拦截请求，返回该资源的拷贝，而不会去源服务器重新下载。
 
 作用：利用缓存可减少对源服务器的访问，因此节省了通信流量和通信时间。
 
@@ -79,7 +85,7 @@ HTTP报文就是浏览器和服务器间通信时发送及响应的数据块。
 
 ## 缓存控制策略
 
-关键词：Cache-Control Last-Modified|If-Modified-Since Etag|if-None-Match
+关键词：`Cache-Control` `Last-Modified|If-Modified-Since` `Etag|If-None-Match`
 
 ### Cache-Control头
 
@@ -181,17 +187,32 @@ Cache-Control: no-transform
 
 no-transform指令：缓存都不能改变实体主体的媒体类型，防止缓存或代理压缩图片等类似操作。
 
-### Last-Modified（响应）|  If-Modified-Since（请求） ---对比缓存
+### 对比缓存
 
-Last-Modified：服务器在响应请求时，告诉浏览器资源的最后修改时间。
-If-Modified-Since：上一次请求资源的修改时间。
-Last-Modified > If-Modified-Since ? 200重新访问资源 : 304使用缓存资源
+#### Last-Modified（响应）| If-Modified-Since（请求）
 
-### Etag（响应）|  If-None-Match（请求） ---对比缓存
+1. Last-Modified：服务器在响应请求时，告诉浏览器资源的最后修改时间。
+2. If-Modified-Since：上一次请求资源的修改时间。
+3. Last-Modified > If-Modified-Since ? 200重新访问资源 : 304使用缓存资源
 
-Etag：服务器响应请求时，告诉浏览器当前资源在服务器的唯一标识（生成规则由服务器决定）。
-If-None-Match：再次请求服务器时，通过此字段通知服务器客户段缓存数据的唯一标识。
-Etag === If-None-Match ? 304使用缓存资源 : 200重新访问资源
+#### Etag（响应）| If-None-Match（请求）
+
+1. Etag：服务器响应请求时，告诉浏览器当前资源在服务器的唯一标识（生成规则由服务器决定）。
+2. If-None-Match：再次请求服务器时，通过此字段通知服务器客户段缓存数据的唯一标识。
+3. Etag === If-None-Match ? 304使用缓存资源 : 200重新访问资源
+
+**缓存优先级**：`Cache-Control` > `Expires` > `ETag` > `Last-Modified`
+
+## 缓存决策指南
+
+源自于 Chrome 官方给出的缓存决策建议：
+
+![cache-order](/images/http-cache/cache-order.png)
+
++ 当资源内容不可以复用时，直接设置 `Cache-Control` 为 `no-store`，拒绝一切形式的缓存
++ 假如每次都需要向服务器进行缓存有效确认时，设置 `Cache-Control` 为 `no-cache`
++ 考虑是否可以被代理服务器缓存，是的话设置为 `public`，否的话则设置为 `private`
++ 然后考虑资源的过期时间：配置 `max-age` 、`Etag`、`Last-Modified` 等参数
 
 参考文章：
 
