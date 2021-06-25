@@ -3,6 +3,7 @@ title: JS：浅析 Vue
 date: 2019-07-23 08:04:26
 tags: JavaScript
 categories: web
+top: ture
 ---
 
 Vue 是一款**渐进式**的 Javascript 框架（Just a view library）。
