@@ -12,9 +12,10 @@ timezone:
 
 #
 search:
-  path: search.xml
+  path: search.json
   field: post
-  content: false
+  format: html
+  limit: 10000
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
