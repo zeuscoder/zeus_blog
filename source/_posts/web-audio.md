@@ -1,5 +1,5 @@
 ---
-title: WEB：Audio 音频基础小结
+title: WEB：Audio 音频基础
 date: 2021-06-27 11:01:01
 tags:
 ---
@@ -68,6 +68,28 @@ Android WebView 和 Chrome 支持程度较好，Mac 和 iPhone Safari 支持系�
 AudioContext 或者 Audio 标签
 
 ![wav 头部](/images/web-audio/wav-header.png)
+
+#### 降噪（消除毛刺）
+
+audiobuffer 播放有细微的噪音
+
+```Javascript
+  function deNoising(buffer: AudioBuffer) {
+    const numberOfChannels = buffer.numberOfChannels;
+    const fixRange = 100; // 该数值根据情况调整
+
+    for (let channel = 0; channel < numberOfChannels; channel++) {
+      const audioBufferArray = buffer.getChannelData(channel);
+      const length = audioBufferArray.length;
+
+      for (let i = 0; i < fixRange; i++) {
+        audioBufferArray[i] = (audioBufferArray[i] * i) / fixRange; // fade in
+        audioBufferArray[length - i - 1] =
+          (audioBufferArray[length - i - 1] * i) / fixRange; // fade out
+      }
+    }
+  }
+```
 
 参考文章：
 
