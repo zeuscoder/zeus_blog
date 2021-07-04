@@ -12,16 +12,16 @@ Web Audio（AduioContext） 的 API 实在太多了，玩起来也会很有趣�
 
 ### 基础概念
 
-声音：因为气压的变化会产生声音信号，声音是由物体振动产生的__声波__，是一种波。我们可以测量压力变化的强度，并绘制随时间变化的测量值。
+声音：因为气压的变化会产生声音信号，声音是由物体振动产生的__声波__，声音是一种波。我们可以测量压力变化的强度，并绘制随时间变化的测量值。
 
-音频采样，是把声音从模拟信号转换为数字信号，所得的被称为 `PCM` 。
+其中音频采样，是把声音从模拟信号转换为数字信号，所得的被称为 `PCM` 。
 
 ### PCM
 
  `PCM` (脉冲编码调制）有[三要素](https://www.cnblogs.com/yongdaimi/p/10722355.html)：声道数（channel number）、采样率（sample rate）、采样位数或位深（bit depth）。
 
 ![PCM](/images/web-audio/audio-steps.png)
-
+bit
 > PCM 是一种编码格式，WAV 是一种文件格式。
 
 ![PCM](/images/web-audio/pcm.png)
@@ -53,6 +53,8 @@ n-bit 指的是声音的强度（振幅）被均分为 2^n 级，常用的有 8b
 
 > B for Byte (字节)， b for bit（位）。1 Byte = 8 bit
 
+![采样位数](/images/web-audio/bit-depth.png)
+
 #### 比特率
 
 比特率：每秒的传输速率，单位为 bps。
@@ -62,6 +64,8 @@ n-bit 指的是声音的强度（振幅）被均分为 2^n 级，常用的有 8b
 > 通常说的 10M 带宽为 10Mbps（这里是比特），下载速率为 10M / 8 = 1.25 MB/s（这里是字节）
 
 ### 音频采集
+
+讲述 PCM 的基础概念后，如何通过浏览器实现音频采集。
 
 #### getUserMedia
 
@@ -83,7 +87,7 @@ Android WebView 和 Chrome 支持程度较好，Mac 和 iPhone Safari 支持系�
 
 ### 音频播放
 
-这里描述的是播放 PCM：AudioContext 不能直接播放 PCM，需要给 PCM 添加 wav 头部，才能通过 AudioContext 转换为 AudioBuffer 播放。
+如何播放音频采集后得到的 PCM：AudioContext 不能直接播放 PCM，需要给 PCM __添加 wav 头部__，才能通过 AudioContext 转换为 AudioBuffer 播放。
 
 #### WAV
 
@@ -97,7 +101,7 @@ wav 格式是一种无损格式，是依据规范在 pcm 数据前添加 __44__ 
 ```Javascript
   public generateWavHeader(options: IWavHeaderOptions): ArrayBuffer {
     const {
-      numFrames,
+      numFrames = originArrayBuffer.byteLength, // originArrayBuffer 为源 PCM
       numChannels = 1,
       sampleRate = 16000,
       bytesPerSample = 2
@@ -109,20 +113,20 @@ wav 格式是一种无损格式，是依据规范在 pcm 数据前添加 __44__ 
     const buffer = new ArrayBuffer(44);
     const dataview = new DataView(buffer);
 
-    let p = 0;
-    p = this.dataviewWriteString(dataview, 'RIFF', p); // ChunkID
-    p = this.dataviewWriteUint32(dataview, chunkSize + 36, p); // ChunkSize
-    p = this.dataviewWriteString(dataview, 'WAVE', p); // Format
-    p = this.dataviewWriteString(dataview, 'fmt ', p); // Subchunk1ID
-    p = this.dataviewWriteUint32(dataview, 16, p); // Subchunk1Size
-    p = this.dataviewWriteUint16(dataview, 1, p); // AudioFormat
-    p = this.dataviewWriteUint16(dataview, numChannels, p); // NumChannels
-    p = this.dataviewWriteUint32(dataview, sampleRate, p); // SampleRate
-    p = this.dataviewWriteUint32(dataview, byteRate, p); // ByteRate
-    p = this.dataviewWriteUint16(dataview, blockAlign, p); // BlockAlign
-    p = this.dataviewWriteUint16(dataview, bytesPerSample * 8, p); // BitsPerSample
-    p = this.dataviewWriteString(dataview, 'data', p); // Subchunk2ID
-    this.dataviewWriteUint32(dataview, chunkSize, p); //  Subchunk2Size
+    let position = 0;
+    position = this.dataviewWriteString(dataview, 'RIFF', position); // ChunkID
+    position = this.dataviewWriteUint32(dataview, chunkSize + 36, position); // ChunkSize
+    position = this.dataviewWriteString(dataview, 'WAVE', position); // Format
+    position = this.dataviewWriteString(dataview, 'fmt ', position); // Subchunk1ID
+    position = this.dataviewWriteUint32(dataview, 16, position); // Subchunk1Size
+    position = this.dataviewWriteUint16(dataview, 1, position); // AudioFormat
+    position = this.dataviewWriteUint16(dataview, numChannels, position); // NumChannels
+    position = this.dataviewWriteUint32(dataview, sampleRate, position); // SampleRate
+    position = this.dataviewWriteUint32(dataview, byteRate, position); // ByteRate
+    position = this.dataviewWriteUint16(dataview, blockAlign, position); // BlockAlign
+    position = this.dataviewWriteUint16(dataview, bytesPerSample * 8, position); // BitsPerSample
+    position = this.dataviewWriteString(dataview, 'data', position); // Subchunk2ID
+    this.dataviewWriteUint32(dataview, chunkSize, position); //  Subchunk2Size
 
     return buffer;
   }
@@ -184,11 +188,39 @@ wav 格式是一种无损格式，是依据规范在 pcm 数据前添加 __44__ 
 
 WAV文件格式的结构组成，对该内容进行分析如下：
 
-![wav 头部](/images/web-audio/wav-header-detail.jpeg)
+```Javascript
+52 49 46 46（ChunkID，4 字节） = ‘RIFF’
+
+24 42 04 00 （ChunkSize，4 字节）=  279076  = 279084 - 8
+
+57 41 56 45 （Format，4 字节） = ‘WAVE’
+
+66 6D 74 20 （Subchunk1ID，4 字节） = ‘fmt ’
+
+10 00 00 00 (Subchunk1 Size，4 字节) = 16
+
+01 00（AudioFormate，2 字节） = 音频格式 = 1
+
+01 00 （NumChannels，2 字节）= 声道数 = 1
+
+80 3E 00 00（SampleRate，4 字节）= 采样率 = 16000
+
+00 7D 00 00（ByteRate，4 字节）= 字节率 = 32000 = 16000 * 16 / 8
+
+02 00 （BlockAlign，2 字节）= 内存对齐 = 2
+
+10 00 （BitsPerSample）= 每个样本的位深度 =  16
+
+64 61 74 61（Subchunk2ID，4 字节） = ‘data’
+
+00 42 04 00 (Subchunk2 Size，4 字节) = 音频PCM数据大小 = 279040 = 279084 - 44
+```
+
+![wav 头部分析](/images/web-audio/wav-header-detail.jpeg)
 
 #### 降噪（消除毛刺）
 
-通过 `AudioContext` 的 `decodeAudioData` API 生成的 Audiobuffer，连续播放短小的 Audiobuffer 时可能会有细微的噪音出现，其中降噪的方法如下：
+通过 `AudioContext` 的 `decodeAudioData` API 生成的 Audiobuffer，连续播放短小的 Audiobuffer 时可能会有细微的噪音出现，其中[降噪](https://stackoverflow.com/questions/53100047/why-state-can-be-invalid-in-web-audio-in-safari-after-resume)的方法如下：
 
 ```Javascript
 function deNoising(buffer: AudioBuffer) {
@@ -263,7 +295,11 @@ function deNoising(buffer: AudioBuffer) {
 - little-endian：`0x78 0x56 0x34 0x12`
 - big-endian：`0x12 0x34 0x56 0x78`
 
-### iOS Q&A
+### 其他
+
+#### iOS Q&A
+
+#### 缓冲（Buffer） vs 缓存（Cache）
 
 寄语：WebRTC 太多要学习的，后续再进一步研究。
 
@@ -273,7 +309,7 @@ function deNoising(buffer: AudioBuffer) {
 
 [让音视频学习变得简单之音频深度学习](https://rtcdeveloper.com/t/topic/21480)
 
-[音频格式介绍和说明](https://zhuanlan.zhihu.com/p/143823529)
+[WAVE PCM soundfile format](http://soundfile.sapp.org/doc/WaveFormat/)
 
 [ArrayBuffer MDN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer)
 
