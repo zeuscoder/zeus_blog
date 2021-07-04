@@ -4,13 +4,23 @@ date: 2021-06-27 11:01:01
 tags:
 ---
 
-Web Audio 的 API 实在太多了！
+Web Audio（AduioContext） 的 API 实在太多了，玩起来也会很有趣。
 
 <!-- more -->
 
+![PCM](/images/web-audio/audio.jpeg)
+
 ### 基础概念
 
-音频采样，是把声音从模拟信号转换为数字信号，所得的 `PCM` (脉冲编码调制）有[三要素](https://www.cnblogs.com/yongdaimi/p/10722355.html)：声道数（channel number）、采样率（sample rate）、采样位数或位深（bit depth）。
+声音：因为气压的变化会产生声音信号，声音是由物体振动产生的__声波__，是一种波。我们可以测量压力变化的强度，并绘制随时间变化的测量值。
+
+音频采样，是把声音从模拟信号转换为数字信号，所得的被称为 `PCM` 。
+
+### PCM
+
+ `PCM` (脉冲编码调制）有[三要素](https://www.cnblogs.com/yongdaimi/p/10722355.html)：声道数（channel number）、采样率（sample rate）、采样位数或位深（bit depth）。
+
+![PCM](/images/web-audio/audio-steps.png)
 
 > PCM 是一种编码格式，WAV 是一种文件格式。
 
@@ -55,7 +65,15 @@ n-bit 指的是声音的强度（振幅）被均分为 2^n 级，常用的有 8b
 
 #### getUserMedia
 
-`navigator.mediaDevices.getUserMedia()`
+实现媒体音频采集的 `WebRTC` 技术，使用的方法是 `navigator.mediaDevices.getUserMedia()`。麦克风或摄像头的启用涉及到安全隐私，通常网页中会有弹框提示，用户确认后才可启用相关功能，调用成功后，回调函数中就可以得到多媒体流对象，后续的工作就是围绕这个流媒体展开的。
+
+![wav-audio-api](/images/web-audio/web-audio-api.png)
+
+#### HTTPS vs HTTP
+
+获取麦克风权限时需要 https 协议下验证，如何能在 http 网站情况下也可以获取[权限](chrome://flags/#unsafely-treat-insecure-origin-as-secure)。
+
+> chrome://flags/#unsafely-treat-insecure-origin-as-secure
 
 #### 设备兼容情况
 
@@ -65,32 +83,198 @@ Android WebView 和 Chrome 支持程度较好，Mac 和 iPhone Safari 支持系�
 
 ### 音频播放
 
-AudioContext 或者 Audio 标签
+这里描述的是播放 PCM：AudioContext 不能直接播放 PCM，需要给 PCM 添加 wav 头部，才能通过 AudioContext 转换为 AudioBuffer 播放。
+
+#### WAV
+
+wav 格式是一种无损格式，是依据规范在 pcm 数据前添加 __44__ 个__字节__长度用来填充一些声明信息的。wav 头部有 44 个字节，具体对应如下：
 
 ![wav 头部](/images/web-audio/wav-header.png)
 
-#### 降噪（消除毛刺）
-
-audiobuffer 播放有细微的噪音
+<details>
+<summary>如何添加 wav 头部代码</summary>
 
 ```Javascript
-  function deNoising(buffer: AudioBuffer) {
-    const numberOfChannels = buffer.numberOfChannels;
-    const fixRange = 100; // 该数值根据情况调整
+  public generateWavHeader(options: IWavHeaderOptions): ArrayBuffer {
+    const {
+      numFrames,
+      numChannels = 1,
+      sampleRate = 16000,
+      bytesPerSample = 2
+    } = options;
+    const blockAlign = numChannels * bytesPerSample;
+    const byteRate = sampleRate * blockAlign;
+    const chunkSize = (numFrames as number) * blockAlign;
 
-    for (let channel = 0; channel < numberOfChannels; channel++) {
-      const audioBufferArray = buffer.getChannelData(channel);
-      const length = audioBufferArray.length;
+    const buffer = new ArrayBuffer(44);
+    const dataview = new DataView(buffer);
 
-      for (let i = 0; i < fixRange; i++) {
-        audioBufferArray[i] = (audioBufferArray[i] * i) / fixRange; // fade in
-        audioBufferArray[length - i - 1] =
-          (audioBufferArray[length - i - 1] * i) / fixRange; // fade out
-      }
+    let p = 0;
+    p = this.dataviewWriteString(dataview, 'RIFF', p); // ChunkID
+    p = this.dataviewWriteUint32(dataview, chunkSize + 36, p); // ChunkSize
+    p = this.dataviewWriteString(dataview, 'WAVE', p); // Format
+    p = this.dataviewWriteString(dataview, 'fmt ', p); // Subchunk1ID
+    p = this.dataviewWriteUint32(dataview, 16, p); // Subchunk1Size
+    p = this.dataviewWriteUint16(dataview, 1, p); // AudioFormat
+    p = this.dataviewWriteUint16(dataview, numChannels, p); // NumChannels
+    p = this.dataviewWriteUint32(dataview, sampleRate, p); // SampleRate
+    p = this.dataviewWriteUint32(dataview, byteRate, p); // ByteRate
+    p = this.dataviewWriteUint16(dataview, blockAlign, p); // BlockAlign
+    p = this.dataviewWriteUint16(dataview, bytesPerSample * 8, p); // BitsPerSample
+    p = this.dataviewWriteString(dataview, 'data', p); // Subchunk2ID
+    this.dataviewWriteUint32(dataview, chunkSize, p); //  Subchunk2Size
+
+    return buffer;
+  }
+
+  public concatArrayBuffer(...buffers: ArrayBuffer[]): ArrayBuffer {
+    const newBufferLength = buffers.reduce((total, buffer) => {
+      total += buffer.byteLength;
+      return total;
+    }, 0);
+    const newBuffer = new Uint8Array(newBufferLength);
+
+    let bufferIndex = 0;
+    buffers.forEach((buffer) => {
+      newBuffer.set(new Uint8Array(buffer), bufferIndex);
+      bufferIndex += buffer.byteLength;
+    });
+
+    return newBuffer.buffer;
+  }
+
+  private dataviewWriteString(
+    dataview: DataView,
+    str: string,
+    position: number
+  ): number {
+    for (let i = 0; i < str.length; i++) {
+      dataview.setUint8(position + i, str.charCodeAt(i));
     }
+    position += str.length;
+    return position;
+  }
+
+  private dataviewWriteUint32(
+    dataview: DataView,
+    num: number,
+    position: number
+  ): number {
+    dataview.setUint32(position, num, true);
+    position += 4;
+    return position;
+  }
+
+  private dataviewWriteUint16(
+    dataview: DataView,
+    num: number,
+    position: number
+  ): number {
+    dataview.setUint16(position, num, true);
+    position += 2;
+    return position;
   }
 ```
+
+</details>
+
+通过浏览器打印日志或者通过记事本打开 WAV 格式的音频 可以发现：
+
+![wav 头部](/images/web-audio/arrayBuffer.png)
+
+WAV文件格式的结构组成，对该内容进行分析如下：
+
+![wav 头部](/images/web-audio/wav-header-detail.jpeg)
+
+#### 降噪（消除毛刺）
+
+通过 `AudioContext` 的 `decodeAudioData` API 生成的 Audiobuffer，连续播放短小的 Audiobuffer 时可能会有细微的噪音出现，其中降噪的方法如下：
+
+```Javascript
+function deNoising(buffer: AudioBuffer) {
+  const fixRange = 100; // 该数值根据情况调整
+  const audioBufferArray = buffer.getChannelData(0);
+  const length = audioBufferArray.length;
+
+  for (let i = 0; i < fixRange; i++) {
+    audioBufferArray[i] = (audioBufferArray[i] * i) / fixRange; // fade in
+    audioBufferArray[length - i - 1] =
+      (audioBufferArray[length - i - 1] * i) / fixRange; // fade out
+  }
+}
+```
+
+<!-- #### AudioContext -->
+
+#### PCM 播放工具
+
+音频混音器：[Audacity](https://www.audacityteam.org/)
+
+![audacity](/images/web-audio/audacity.png)
+
+### ArrayBuffer 缓冲
+
+`ArrayBuffer` 对象用来表示通用的、固定长度的原始二进制数据缓冲区（预分配内存）。
+
+```Javascript
+ const buffer = new ArrayBuffer(16); // 16 字节长度的 ArrayBuffer
+ console.log(buffer.byteLength);
+```
+
+- 单位是__字节__，它是一个字节数组，通常在其他语言中称为 byte array
+- 不能__直接操作__ `ArrayBuffer` 的内容，只能通过 DataView 或者定型数组对象操作
+- ArrayBuffer 分配的内存__不能超过__ Number.MAX_SAFE_INTEGER(2^53 - 1) 字节
+
+#### DataView
+
+`DataView` 视图是一个可以从二进制 *ArrayBuffer* 对象中读写多种数值类型的底层接口，使用它时不用考虑不同平台的`字节序`问题。
+
+> 必须在对已有的 ArrayBuffer 读取或写入时才能创建 DataView 实例。
+
+```Javascript
+ const buffer = new ArrayBuffer(16)
+
+ const dataview = new DataView(buffer);
+ dataview.setUint8(0, 255);
+ dataview.setUint8(1, 0xff);
+ console.log(dataview.byteOffset);
+ console.log(dataview.byteLength);
+ console.log(dataview.buffer === buffer); // DataViiew 维护着对该缓冲实例的引用
+```
+
+要通过 DataView 读取缓冲，还需要以下几点：
+
+- 首先是要读或者写的字节偏移量。可以看出 DataView 中的某种“地址”
+- DataView 应该使用 ElementType 来实现 Javascript 的 Number 类型到缓冲内二进制格式的转换
+- 最后是内存中值的字节序。默认为大端字节序
+
+#### 定型数组
+
+![DataView Element Type](/images/web-audio/dataview-type.jpeg)
+
+#### 字节序
+
+[字节序](https://developer.mozilla.org/zh-CN/docs/Glossary/Endianness)，或字节顺序（"Endian"、"endianness" 或 "byte-order"），描述了计算机如何组织字节，组成对应的数字。
+
+每一个字节可以存储一个 8 位（bit）的数字（0x00-0xff），存储更大数字需要多个字节，现在大部分需占用多字节的数字排列方式是 little-endian（低位字节排放在内存中低地址端，高字节排放在内存的高地址端），与 big-endian 相反。
+
+举例：用不同字节序存储数字 `0x12345678`(即十进制中的 305 419 896)
+
+- little-endian：`0x78 0x56 0x34 0x12`
+- big-endian：`0x12 0x34 0x56 0x78`
+
+### iOS Q&A
+
+寄语：WebRTC 太多要学习的，后续再进一步研究。
 
 参考文章：
 
 [音频属性相关：声道、采样率、采样位数、样本格式、比特率](https://www.cnblogs.com/yongdaimi/p/10722355.html)
+
+[让音视频学习变得简单之音频深度学习](https://rtcdeveloper.com/t/topic/21480)
+
+[音频格式介绍和说明](https://zhuanlan.zhihu.com/p/143823529)
+
+[ArrayBuffer MDN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer)
+
+Javascript 高级程序设计（第四版）：定型数组
