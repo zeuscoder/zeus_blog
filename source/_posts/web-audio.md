@@ -268,17 +268,16 @@ function deNoising(buffer: AudioBuffer) {
 
 ### 播放
 
+通过 createBufferSource() 方法用于创建一个新的 `AudioBufferSourceNode` 接口, 该接口可以通过 AudioBuffer 对象来播放音频数据。再连接到 AudioContext 中所有音频（节点）的最终目标节点，一般是音频渲染设备，比如扬声器。
+
 ```Javascript
 function play(buffer: AudioBuffer) {
   const AudioContext = window.AudioContext || window.webkitAudioContext;
   const audioCtx = new AudioContext();
   const source = audioCtx.createBufferSource();
-  const gainNode = audioCtx.createGain();
 
   source.buffer = buffer;
-  gainNode.gain.setValueAtTime(1, audioCtx.currentTime);
-  source.connect(gainNode);
-  gainNode.connect(audioCtx.destination);
+  source.connect(audioCtx.destination);
   source.start();
 }
 ```
