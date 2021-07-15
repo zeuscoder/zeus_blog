@@ -343,11 +343,40 @@ function play(buffer: AudioBuffer) {
 - little-endian：`0x78 0x56 0x34 0x12`
 - big-endian：`0x12 0x34 0x56 0x78`
 
-## 其他
+## 问题总结
+
+总结下处理音频时遇到的问题：iOS 和 Safari 问题就是特别多。
 
 ### iOS Q&A
 
-#### iOS AudioContext Numbers
+#### 1. Safari 调用 AudioContext 的次数有限
+
+问题：多次生成 AudioContext 实例会报错 `null is not an object`
+
+方案：销毁  AudioContext 实例
+
+```Javascript
+AudioContext.close(); // 关闭一个音频环境, 释放任何正在使用系统资源的音频.
+```
+
+#### 2. Safari 不支持 AudioContext.decodeAudio Promise
+
+#### 3. iOS AudioContext 播放没有声音
+
+点击 Audio 标签播放有声音，AudioContext 播放没有声音，检查后发现 iOS 静音模式下无法播放声音。
+
+#### 4. iOS Safari 不触发 canplaythrough 事件
+
+问题：iOS Audio 标签加载资源后 Safari 不触发 canplaythrough 事件
+
+方案：设置 src 后调用 load 方法（iOS 14 及以上）
+
+```Javascript
+const audio = document.createElement('AUDIO');
+audio.addEventListener('canplaythrough', loadedVideo, false);
+audio.src = url;
+audio.load(); // 关键代码
+```
 
 ### 缓冲（Buffer） vs 缓存（Cache）
 
