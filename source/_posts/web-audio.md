@@ -82,7 +82,103 @@ n-bit 指的是声音的强度（振幅）被均分为 2^n 级，常用的有 8b
 ![wav-audio-api](/images/web-audio/web-audio-api.png)
 
 ```Javascript
-  navigator.mediaDevices.getUserMedia({audio:true})
+navigator.mediaDevices.getUserMedia({audio:true})
+  .then(mediaStream=> {
+    // audioInput 表示音频源节点
+    const audioInput = audioContext.createMediaStreamSource(stream);
+    // scriptProcessorNode 为关键节点
+    const recorder = audioContext.createScriptProcessor(4096, 1, 1)
+    // 音频采集，每采集完样本帧预设数值（4096）后会触发 onaudioprocess 接口一次
+    recorder.onaudioprocess = (e: {
+      inputBuffer: AudioBuffer;
+      outputBuffer: AudioBuffer;
+    }) => {
+      // 核心：处理 AudioBuffer 逻辑，假设是单声道
+      encodePCM(compress(e.inputBuffer.getChannelData(0)))
+    }
+    audioInput.connect(recorder);
+    recorder.connect(audioContext.destination);
+  })
+```
+
+核心过程：
+
+1. 通过 createMediaStreamSource 方法创建 MediaStreamAudioSourceNode 音频源节点
+
+2. 通过 createScriptProcessor 方法创建 scriptProcessorNode 脚本处理节点
+
+3. 通过 scriptProcessorNode 节点的 onaudioprocess 回调函数**处理音频逻辑**
+
+#### [AudioBuffer](https://developer.mozilla.org/zh-CN/docs/Web/API/AudioBuffer)
+
+AudioBuffer接口表示存在内存里的一段短小的音频资源。缓存区（buffer）包含以下数据：不间断的 IEEE754 32 位线性PCM，从-1到1的范围额定，就是说，32位的浮点缓存区的每个样本在-1.0到1.0之间。
+
+#### 采样率的转写
+
+音频是由浏览器采样率（一般为 48k）采集的，需要进行转写为我们真正需要的采样率（假设 16k），只支持由高转低，**具体为按照输入采样率和输出采样率的比例，每隔比例位数取1位**。
+
+```Javascript
+/**
+ * 根据输入和输出的采样率压缩数据，
+ * 比如输入的采样率是48k的，我们需要的是（输出）的是16k的，由于48k与16k是3倍关系，
+ * 所以输入数据中每隔3取1位
+ *
+ * @param {float32array} data       [-1, 1]的pcm数据
+ * @param {number} inputSampleRate  输入采样率
+ * @param {number} outputSampleRate 输出采样率
+ * @returns  {float32array}         压缩处理后的二进制数据
+ */
+  function interleave(data: Float32Array, inputSampleRate: number, outputSampleRate: number) {
+    const t = data.length;
+    let s = 0;
+    const o = inputSampleRate / outputSampleRate;
+    const u = Math.ceil((t * outputSampleRate) / inputSampleRate);
+    const a = new Float32Array(u);
+    for (let i = 0; i < u; i++) {
+      a[i] = data[Math.floor(s)];
+      s += o;
+    }
+    return a;
+  }
+```
+
+#### 位深的转写
+
+采样率的问题解决完，还需要将音频流转为对应位深，生成长度为（位深/8 * 音频原长度）的 Uint8Array。
+
+```Javascript
+// bit reduce and convert to integer
+switch (this.bytesPerSample) {
+  case 4: // 32 bits signed
+    sample = sample * 2147483647.5 - 0.5;
+    reducedData[outputIndex] = sample;
+    // tslint:disable-next-line:no-bitwise
+    reducedData[outputIndex + 1] = sample >> 8;
+    // tslint:disable-next-line:no-bitwise
+    reducedData[outputIndex + 2] = sample >> 16;
+    // tslint:disable-next-line:no-bitwise
+    reducedData[outputIndex + 3] = sample >> 24;
+    break;
+
+  case 3: // 24 bits signed
+    sample = sample * 8388607.5 - 0.5;
+    reducedData[outputIndex] = sample;
+    // tslint:disable-next-line:no-bitwise
+    reducedData[outputIndex + 1] = sample >> 8;
+    // tslint:disable-next-line:no-bitwise
+    reducedData[outputIndex + 2] = sample >> 16;
+    break;
+
+  case 2: // 16 bits signed
+    sample = sample * 32767.5 - 0.5;
+    reducedData[outputIndex] = sample;
+    // tslint:disable-next-line:no-bitwise
+    reducedData[outputIndex + 1] = sample >> 8;
+    break;
+
+  case 1: // 8 bits unsigned
+    reducedData[outputIndex] = (sample + 1) * 127.5;
+    break;
 ```
 
 ### HTTPS vs HTTP
@@ -230,6 +326,13 @@ WAV文件格式的结构组成，对该内容进行分析如下：
 
 ![wav 头部分析](/images/web-audio/wav-header-detail.jpeg)
 
+
+可以通过 `file` 命令查看 wav 头部简要信息
+
+```Bash
+$ file test.wav
+```
+
 ### 解码(decode)
 
 通过 `AudioContext` 的 `decodeAudioData` API 解码 wav 文件中的 ArrayBuffer，转换为 Audiobuffer。
@@ -361,9 +464,14 @@ AudioContext.close(); // 关闭一个音频环境, 释放任何正在使用系�
 
 #### 2. Safari 不支持 AudioContext.decodeAudio Promise
 
+问题：AudioContext.decodeAudio Promise Safari 下会报错
+
+方案：直接使用回调函数，不使用 Promise
+
 #### 3. iOS AudioContext 播放没有声音
 
-点击 Audio 标签播放有声音，AudioContext 播放没有声音，检查后发现 iOS 静音模式下无法播放声音。
+问题：点击 Audio 标签播放有声音，AudioContext 播放没有声音
+方案：检查后发现 AudioContext 在 iOS 静音模式下无法播放声音
 
 #### 4. iOS Safari 不触发 canplaythrough 事件
 
@@ -378,7 +486,11 @@ audio.src = url;
 audio.load(); // 关键代码
 ```
 
-### 缓冲（Buffer） vs 缓存（Cache）
+#### 5. iOS Safari 显示播放时间不正确
+
+问题：iOS Safari Audio 标签加载资源后显示的时间长度不正确
+
+方案：头部部分字段值不正确
 
 最后寄语：WebRTC 和 FFmpeg 太多要学习的，后续再进一步研究。
 
