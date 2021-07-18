@@ -326,12 +326,13 @@ WAV文件格式的结构组成，对该内容进行分析如下：
 
 ![wav 头部分析](/images/web-audio/wav-header-detail.jpeg)
 
-
 可以通过 `file` 命令查看 wav 头部简要信息
 
 ```Bash
-$ file test.wav
+$file test.wav
 ```
+
+![wav-file](/images/web-audio/wav-file-detail.jpeg)
 
 ### 解码(decode)
 
