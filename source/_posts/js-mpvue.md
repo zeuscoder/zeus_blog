@@ -6,7 +6,7 @@ tags:
 
 [mpvue](https://github.com/Meituan-Dianping/mpvue) 是一个使用 Vue.js 开发**小程序**的前端框架。框架基于 Vue.js 核心，mpvue 修改了 Vue.js 的 `runtime` 和 `compiler` 实现，使其可以运行在小程序环境中，从而为小程序开发引入了整套 Vue.js 开发体验。
 
-引用自 [mpvue](http://mpvue.com/) 官网的介绍。
+> 引用自 [mpvue](http://mpvue.com/) 官网的介绍。
 <!-- more -->
 
 基于官方的解释，可以初步认为 mpvue 是：
@@ -25,7 +25,7 @@ tags:
 * mpvue.js：mpvue 的小程序核心库；
 * mpvue-quickstart：基于 Vue-CLI 2.0 的 mpvue 脚手架；
 * mpvue-loader：实现自定义 .vue 文件的解析，将其解析为 wxml、wxss 和 js 文件。
-  
+
 ① 通过 `mpvue-quickstart` 快速构建 mpvue 项目：
 
 ```Node

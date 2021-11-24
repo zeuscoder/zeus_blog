@@ -76,8 +76,8 @@ theme: ocean
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repo: https://github.com/zeuscoder/zeuscoder.github.io.git
+  repo: git@github.com:zeuscoder/zeuscoder.github.io.git
   branch: master
 
-marked: 
+marked:
   breaks: false
