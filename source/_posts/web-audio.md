@@ -183,9 +183,13 @@ switch (this.bytesPerSample) {
 
 ### HTTPS vs HTTP
 
-获取麦克风权限时需要 https 协议下验证，如何能在 http 网站情况下也可以获取[权限](chrome://flags/#unsafely-treat-insecure-origin-as-secure)。
+获取麦克风权限时需要 https 协议下验证，如何能在 http 网站情况下也可以获取[权限](https://support.scandit.com/hc/en-us/articles/360002743551-Do-I-really-need-to-serve-my-site-with-https-)。
 
 > chrome://flags/#unsafely-treat-insecure-origin-as-secure
+
+本地服务 iOS wss 连接断开问题，[需要开启指定的新特性](https://stackoverflow.com/questions/37898048/websocket-network-error-osstatus-error-9807-invalid-certificate-chain/42148960)
+
+> Settings（设置） > Safari > Advanced（高级） > Experimental Features > NSURLSession Websocket
 
 ### 设备兼容情况
 
@@ -332,7 +336,7 @@ WAV文件格式的结构组成，对该内容进行分析如下：
 $file test.wav
 ```
 
-![wav-file](/images/web-audio/wav-file-detail.jpeg)
+![wav-file](/images/web-audio/wav-file-detail.png)
 
 ### 解码(decode)
 
@@ -386,15 +390,11 @@ function play(buffer: AudioBuffer) {
 }
 ```
 
-<!-- #### AudioContext -->
-
 ### PCM 播放工具
 
 音频混音器：[Audacity](https://www.audacityteam.org/)
 
 ![audacity](/images/web-audio/audacity.png)
-
-## AudioContext
 
 ## ArrayBuffer
 
@@ -472,7 +472,12 @@ AudioContext.close(); // 关闭一个音频环境, 释放任何正在使用系�
 #### 3. iOS AudioContext 播放没有声音
 
 问题：点击 Audio 标签播放有声音，AudioContext 播放没有声音
-方案：检查后发现 AudioContext 在 iOS 静音模式下无法播放声音
+
+方案：检查后发现 AudioContext 在 iOS 静音模式下无法播放声音，其次判断 AudioContext 是否处于 running 状态，否则调用
+
+```Javascript
+audioContext.resume();
+```
 
 #### 4. iOS Safari 不触发 canplaythrough 事件
 
