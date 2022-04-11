@@ -8,6 +8,13 @@ categories: web
 <!-- more -->
 
 <div align="center">
+![2021-road-map](/images/web-roadMap/2022.png)
+本图片转载自 2022 [kamranahmedse](https://roadmap.sh/frontend)
+</div>
+
+***
+
+<div align="center">
 ![2021-road-map](/images/web-roadMap/2021.png)
 本图片转载自 2021 [kamranahmedse](https://github.com/kamranahmedse/developer-roadmap)
 </div>

@@ -199,11 +199,11 @@ Android WebView 和 Chrome 支持程度较好，Mac 和 iOS Safari 支持系统�
 
 ## 音频播放
 
-下一步，需要了解采集后得到的 PCM 是如何播放：PCM 是无法直接播放的，需要给 PCM __添加 wav 头部__，才能通过 AudioContext 转换为 AudioBuffer 播放。
+下一步，需要了解采集后得到的 PCM 是如何播放：PCM 是无法直接播放的，需要给 PCM **添加 wav 头部**，才能通过 AudioContext 转换为 AudioBuffer 播放。
 
 ### 转换
 
-wav 格式是一种无损格式，是依据规范在 pcm 数据前添加 __44__ 个__字节__长度用来填充一些声明信息的。wav 头部有 44 个字节，具体对应如下：
+wav 格式是一种无损格式，是依据规范在 pcm 数据前添加 **44** 个__字节__长度用来填充一些声明信息的。wav 头部有 44 个字节，具体对应如下：
 
 ![wav 头部](/images/web-audio/wav-header.png)
 
@@ -497,6 +497,12 @@ audio.load(); // 关键代码
 问题：iOS Safari Audio 标签加载资源后显示的时间长度不正确
 
 方案：头部部分字段值不正确
+
+#### 6. iPad 14.8 播放时间不正确
+
+问题：iPad 14.8 AudioContext 播放的时间跟理论上（source.buffer.duration 或者 arraybuffer/samplerate/2）计算的时间不一致，实际上播放时间更短
+
+方案：使用 source.onended 监听回调函数替代
 
 最后寄语：WebRTC 和 FFmpeg 太多要学习的，后续再进一步研究。
 
