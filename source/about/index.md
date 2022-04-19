@@ -7,12 +7,19 @@ date: 2021-06-24 23:51:29
 
 <div align="center">
 ![2016](/images/about/2016.jpeg)
-2016 favorite in TaiWan 
+2016 favorite in TaiWan
 </div>
 
 ***
 
 <div align="center">
 ![2021](/images/about/2021.jpeg)
-2021  in ShenZhen 
+2021  in ShenZhen
+</div>
+
+***
+
+<div align="center">
+![2021](/images/about/2022.jpg)
+2022  in ShenZhen
 </div>
