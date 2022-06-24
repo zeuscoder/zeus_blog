@@ -31,11 +31,20 @@ tags:
 
 - 查看历史命令：`history`
 - 执行history历史命令列表中第num条命令：`!num`
+- 执行history历史命令列表中上一条命令：`!!`
 - 执行含有string字符串的最新命令：`!?string?`
 
 #### 其它
 
 - 按一次补全，按两次列出所有相关信息：`Tab`
+- 强制终止当前命令：`Ctrl + c`
+- __清屏__：`Ctrl + l`
+
+#### Shell 脚本教程
+
+[脚本教程](https://www.runoob.com/linux/linux-shell.html)
+
+***
 
 ### VS Code
 
@@ -58,6 +67,8 @@ VS Code中的每个命令也可以通过使用 `Ctrl + Shift + P` 和搜索查�
 - 左侧目录栏显示与隐藏：`Ctrl + B`
 - 新建一个窗口：`Ctrl + Shift + N`
 
+***
+
 ### Vim
 
 vi 的最常用的两种模式： __普通模式__ | __输入模式__
@@ -73,3 +84,4 @@ vi 的最常用的两种模式： __普通模式__ | __输入模式__
 - 保存并退出文本：`:wq`
 - 显示行号：`:set nu`
 - 不显示行号：`:set nonu`
+- 删除当前行：`dd`
