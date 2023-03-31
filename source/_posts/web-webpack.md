@@ -12,11 +12,57 @@ Webpack 是一个打包模块化 Javascript 的工具，在 webpack 里**一切�
 
 **<font color="red">以 webpack 5.x 为本文讲解版本。</font>**
 
-### 核心流程机制
+## 核心流程机制
 
-### loader
+### 核心流程图
 
-### plugin
+这里急需一张从代码到构建产物的流程图
+
+### 架构
+
+#### 插件机制
+
+##### tapable
+
+##### hook
+
+## loader
+
+运行顺序：从右到左
+
+### 核心原理
+
+### 常用 loader
+
+| loader | 作用 |
+| :------ | :------: |
+| vue-loader |  |
+| style-loader |  |
+| css-loader |  |
+| scss-loader |  |
+| postcss-loader |  |
+| url-loader |  |
+| babel-loader |  |
+| posthtml-loader |  |
+| ts-loader |  |
+
+## plugin
+
+### 核心原理
+
+### 常用 plugin
+
+| plugin | 作用 |
+| :------ | :------: |
+| SplitChunksPlugin |  |
+| TextExtractPlugin |  |
+| DllPlugin |  |
+| ImageMinimizerWebpackPlugin |  |
+| TerserWebpackPlugin |  |
+
+## 高级特性
+
+### hmr
 
 ### tree-shaking
 
@@ -28,11 +74,43 @@ Webpack 是一个打包模块化 Javascript 的工具，在 webpack 里**一切�
 
 前提：
 
-* 使用 ES2015 模块语法（即 `import` 和 `export`）;
+* **使用 ES2015 模块语法（即 `import` 和 `export`）**;
 * 在项目的 package.json 文件中，添加 "sideEffects" 属性;
 * 需要将 `webpack.config.js` 中的 `mode` 配置选项设置为 `production`。
 
 
-
+和 `babel-loader` 的关系???
 
 ### source-map
+
+`source map` 实质上是一个 **`JSON` 描述文件**，里面存储了代码打包转换后的位置信息，维护了打包前后的代码映射关系。
+
+#### 环境应用
+
+生成环境：`none`
+
+开发环境：`source-map`
+
+#### 配置参考
+
+| 关键字 | 含义 |
+| :------ | :------: |
+| source-map | 生成 sourcemap 文件，可以配置 inline，会以 dataURL 的方式内联，可以配置 hidden，只生成 sourcemap，不和生成的文件关联 |
+| eval | 浏览器 devtool 支持通过 sourceUrl 来把 eval 的内容单独生成文件，还可以进一步通过 sourceMappingUrl 来映射回源码，webpack 利用这个特性来简化了 sourcemap 的处理，可以直接从模块开始映射，不用从 bundle 级别 |
+| cheap | 只映射到源代码的某一行，不精确到列，可以提升 sourcemap 生成速度 |
+| module | sourcemap 生成时会关联每一步 loader 生成的 sourcemap，配合 sourcemap-loader 可以映射回最初的源码 |
+| inline |  |
+| hidden |  |
+| nosources | 不生成 sourceContent 内容，可以减小 sourcemap 文件的大小 |
+
+#### 原理
+
+#### 实战
+
+### code-splitting
+
+
+参考资料：
+
+[1] <a href="https://www.webpackjs.com/">Webpack 官网</a><br>
+[2] <a href="https://gitmind.cn/app/docs/m1foeg1o">Webpack 5 知识体系</a><br>
