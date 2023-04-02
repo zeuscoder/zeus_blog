@@ -12,6 +12,51 @@ Webpack 是一个打包模块化 Javascript 的工具，在 webpack 里**一切�
 
 **<font color="red">以 webpack 5.x 为本文讲解版本。</font>**
 
+## 入门
+
+### 安装
+
+初始化项目：
+
+```Shell
+    mkdir webpack-demo
+    cd webpack-demo
+    npm init -y 
+```
+
+安装相关依赖：
+
+```Shell
+    // webpack 4.0 后需要同时安装 webpack-cli
+    npm install webpack webpack-cli -D
+```
+
+- webpack: 核心编译工具。
+
+- webpack-cli: webpack 抽取出来独立的 .bin 命令库，[提供控制台命令](https://webpack.docschina.org/api/cli/)，接收参数，执行构建工作（npx webpack）。
+
+### 配置
+
+`webpack.config.js`
+
+TODO：在这里放上一个完整的 webpack 完整配置文件
+
+```JavaScript
+    /**@type {import('webpack'.Configuration)} */
+    // 添加上行注释，输入时会自动显示 webpack 配置提示
+    module.exports = {
+        mode: 'development'
+    }
+```
+
+### 生成文件
+
+webpack 自己实现了一套 import
+
+```JavaScript
+    // 打包后的文件
+```
+
 ## 核心流程机制
 
 ### 核心流程图
