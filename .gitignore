@@ -5,3 +5,8 @@ db.json
 node_modules/
 public/
 .deploy*/
+.idea/zeus_blog.iml
+.idea/vcs.xml
+.idea/modules.xml
+webpack-demo/dist/bundle.js
+webpack-demo/dist/index.html
