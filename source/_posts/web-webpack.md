@@ -10,60 +10,216 @@ Webpack 是一个打包模块化 Javascript 的工具，在 webpack 里**一切�
 
 <!-- more -->
 
-**<font color="red">以 webpack 5.x 为本文讲解版本。</font>**
+**<font color="red">以 webpack 5.x 为本文讲解版本。(篇幅太大，后续会再分篇详细论述)</font>**
 
-## 入门
+![2021-road-map](/images/web-webpack/webpack-slogan.png)
 
-### 安装
+## 入门篇
+
+### 安装依赖
 
 初始化项目：
 
 ```Shell
     mkdir webpack-demo
     cd webpack-demo
-    npm init -y 
+    npm init -y
 ```
 
 安装相关依赖：
 
 ```Shell
-    // webpack 4.0 后需要同时安装 webpack-cli
+    # webpack 4.0 后需要同时安装 webpack-cli
     npm install webpack webpack-cli -D
 ```
 
-- webpack: 核心编译工具。
+- webpack: [核心编译工具](https://webpack.docschina.org/)。
 
-- webpack-cli: webpack 抽取出来独立的 .bin 命令库，[提供控制台命令](https://webpack.docschina.org/api/cli/)，接收参数，执行构建工作（npx webpack）。
+- webpack-cli: 由 webpack 抽取出来独立的 **.bin 命令库**，[提供控制台命令](https://webpack.docschina.org/api/cli/)，接收参数，执行构建工作（npx webpack）。
 
-### 配置
+### 配置选项
 
-`webpack.config.js`
+生成 `webpack` 的配置文件 `webpack.config.js`：
 
-TODO：在这里放上一个完整的 webpack 完整配置文件
-
-```JavaScript
-    /**@type {import('webpack'.Configuration)} */
-    // 添加上行注释，输入时会自动显示 webpack 配置提示
-    module.exports = {
-        mode: 'development'
-    }
+```Shell
+    touch webpack.config.js
 ```
 
-### 生成文件
+<details>
+    <summary>配置文件内容</summary>
 
-webpack 自己实现了一套 import
+    ```JavaScript
+        // TODO：在这里放上一个完整的 webpack 完整配置文件
+        /** @type {import('webpack'.Configuration)} */
+        const path = require('path');
 
-```JavaScript
-    // 打包后的文件
+        module.exports = {
+            mode: 'development',
+            entry: './src/index.js',
+            output: {
+                path: path.resolve(__dirname, 'dist'),
+                filename: 'bundle.js',
+            },
+        }
+    ```
+</details>
+
+> 小技巧：在 vscode 中 `webpack.config.js` 文件开头添加注释 `/**@type {import('webpack'.Configuration)} */`，会被标记为 webpack 配置文件，在输入时会有对应的提示选择项。
+
+### 编写代码
+
+本处使用一个 import 引用的简单例子：
+
+```Shell
+    touch src/index.js
+    touch src/util.js
 ```
+
+<details>
+    <summary>src 文件内容</summary>
+
+    ```JavaScript
+        /** ------ src/index.js start ------ */
+        import util from './util';
+
+        util.match();
+        /** ------ src/index.js end ------ */
+
+        /** ------ src/util.js start ------ */
+        export default {
+            match: () => {
+                console.log('match')
+            }
+        }
+        /** ------ src/util.js end ------ */
+    ```
+</details>
+
+### 构建运行
+
+将源代码文件编译构建生成最终产物 `dist/bundle.js`：
+
+```Shell
+    npx webpack
+```
+
+webpack 自己实现了一套 `import`, 详细分析 `__webpack_require__`(TODO)
+
+<details>
+  <summary>生成的 main.js 内容</summary>
+
+  ```JavaScript
+    /******/ (() => { // webpackBootstrap
+    /******/ 	"use strict";
+    /******/ 	var __webpack_modules__ = ({
+
+    /***/ "./src/index.js":
+    /*!**********************!*\
+    !*** ./src/index.js ***!
+    \**********************/
+    /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+    eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./util */ \"./src/util.js\");\n\r\n\r\n_util__WEBPACK_IMPORTED_MODULE_0__[\"default\"].match();\r\n\n\n//# sourceURL=webpack://webpack-demo/./src/index.js?");
+
+    /***/ }),
+
+    /***/ "./src/util.js":
+    /*!*********************!*\
+    !*** ./src/util.js ***!
+    \*********************/
+    /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+    eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({\r\n    match: () => {\r\n        // console.log('match')\r\n        return 'match'\r\n    }\r\n});\n\n//# sourceURL=webpack://webpack-demo/./src/util.js?");
+
+    /***/ })
+
+    /******/ 	});
+    /************************************************************************/
+    /******/ 	// The module cache
+    /******/ 	var __webpack_module_cache__ = {};
+    /******/
+    /******/ 	// The require function
+    /******/ 	function __webpack_require__(moduleId) {
+    /******/ 		// Check if module is in cache
+    /******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+    /******/ 		if (cachedModule !== undefined) {
+    /******/ 			return cachedModule.exports;
+    /******/ 		}
+    /******/ 		// Create a new module (and put it into the cache)
+    /******/ 		var module = __webpack_module_cache__[moduleId] = {
+    /******/ 			// no module.id needed
+    /******/ 			// no module.loaded needed
+    /******/ 			exports: {}
+    /******/ 		};
+    /******/
+    /******/ 		// Execute the module function
+    /******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+    /******/
+    /******/ 		// Return the exports of the module
+    /******/ 		return module.exports;
+    /******/ 	}
+    /******/
+    /************************************************************************/
+    /******/ 	/* webpack/runtime/define property getters */
+    /******/ 	(() => {
+    /******/ 		// define getter functions for harmony exports
+    /******/ 		__webpack_require__.d = (exports, definition) => {
+    /******/ 			for(var key in definition) {
+    /******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+    /******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+    /******/ 				}
+    /******/ 			}
+    /******/ 		};
+    /******/ 	})();
+    /******/
+    /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+    /******/ 	(() => {
+    /******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+    /******/ 	})();
+    /******/
+    /******/ 	/* webpack/runtime/make namespace object */
+    /******/ 	(() => {
+    /******/ 		// define __esModule on exports
+    /******/ 		__webpack_require__.r = (exports) => {
+    /******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+    /******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+    /******/ 			}
+    /******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+    /******/ 		};
+    /******/ 	})();
+    /******/
+    /************************************************************************/
+    /******/
+    /******/ 	// startup
+    /******/ 	// Load entry module and return exports
+    /******/ 	// This entry module can't be inlined because the eval devtool is used.
+    /******/ 	var __webpack_exports__ = __webpack_require__("./src/index.js");
+    /******/
+    /******/ })()
+    ;
+    ```
+</details>
 
 ## 核心流程机制
 
 ### 核心流程图
 
-这里急需一张从代码到构建产物的流程图
+// TODO：这里急需一张从代码到构建产物的流程图
+
+C:\Users\leon\Desktop\pro\webpack\lib\webpack.js
 
 ### 架构
+
+| 技术名词 | 介绍 |
+| :------ | :------ |
+| Entry | 编译入口，webpack 编译的起点 |
+| Compiler | 编译管理器，webpack 启动后会创建 compiler 对象，**该对象一直存活直到结束退出** |
+| Compilation | 单次编辑过程的管理器，比如 watch = true 时，运行过程中只有一个 compiler，**但每次文件变更触发重新编译时，都会创建一个新的 compilation 对象** |
+| Dependence | 依赖对象，webpack 基于该类型记录模块间依赖关系 |
+| Module | webpack 内部所有资源都会以 module对象形式存在，所有关于资源的操作、转译、合并都是以 module为基本单位进行的 |
+| Chunk | 编译完成准备输出时，webpack 会将module按特定的规则组织成一个一个的 chunk，**这些 chunk 某种程度上跟最终输出一一对应** |
+| Loader | 资源内容转换器，其实就是实现从内容 A 转换 B 的转换器 |
+| Plugin | webpack构建过程中，会在特定的时机广播对应的事件，插件监听这些事件，在特定时间点介入编译过程 |
 
 #### 插件机制
 
@@ -159,3 +315,4 @@ webpack 自己实现了一套 import
 
 [1] <a href="https://www.webpackjs.com/">Webpack 官网</a><br>
 [2] <a href="https://gitmind.cn/app/docs/m1foeg1o">Webpack 5 知识体系</a><br>
+[2] <a href="https://mp.weixin.qq.com/s/SbJNbSVzSPSKBe2YStn2Zw">[万字总结] 一文吃透 Webpack 核心原理</a><br>
