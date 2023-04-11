@@ -52,6 +52,8 @@ Webpack 是一个打包模块化 Javascript 的工具，在 webpack 里**一切�
         // TODO：在这里放上一个完整的 webpack 完整配置文件
         /** @type {import('webpack'.Configuration)} */
         const path = require('path');
+        const HtmlWebpackPlugin = require('html-webpack-plugin');
+        const ConsoleLogOnBuildWebpackPlugin = require('./plugin/ConsoleLogOnBuildWebpackPlugin');
 
         module.exports = {
             mode: 'development',
@@ -60,6 +62,10 @@ Webpack 是一个打包模块化 Javascript 的工具，在 webpack 里**一切�
                 path: path.resolve(__dirname, 'dist'),
                 filename: 'bundle.js',
             },
+            plugins: [
+                new ConsoleLogOnBuildWebpackPlugin(),
+                new HtmlWebpackPlugin({ template: './src/index.html' }),
+            ],
         }
     ```
 </details>
@@ -202,11 +208,16 @@ webpack 自己实现了一套 `import`, 详细分析 `__webpack_require__`(TODO)
 
 ## 核心流程机制
 
+了解核心原理，首选边调试边查看的方式：
+
+1. 在 `vscode` 编辑器中单独打开项目
+2. 新建 terminal，**再新建 `JavaScript debug terminal`**
+3. 在** `node_modules/webpack/lib/`** 目录的 **`webpack.js`** 和 **`WebpackOptionsApply.js`** 调试位置打上断点
+4. 终端运行 `npx webpack`
+
 ### 核心流程图
 
 // TODO：这里急需一张从代码到构建产物的流程图
-
-C:\Users\leon\Desktop\pro\webpack\lib\webpack.js
 
 ### 架构
 
@@ -247,6 +258,8 @@ C:\Users\leon\Desktop\pro\webpack\lib\webpack.js
 | posthtml-loader |  |
 | ts-loader |  |
 
+### 编写 loader
+
 ## plugin
 
 ### 核心原理
@@ -260,6 +273,8 @@ C:\Users\leon\Desktop\pro\webpack\lib\webpack.js
 | DllPlugin |  |
 | ImageMinimizerWebpackPlugin |  |
 | TerserWebpackPlugin |  |
+
+### 编写 plugin
 
 ## 高级特性
 
