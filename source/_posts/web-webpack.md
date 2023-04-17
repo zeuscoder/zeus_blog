@@ -232,13 +232,10 @@ webpack 自己实现了一套 `import`, 详细分析 `__webpack_require__`(TODO)
 | Loader | 资源内容转换器，其实就是实现从内容 A 转换 B 的转换器 |
 | Plugin | webpack构建过程中，会在特定的时机广播对应的事件，插件监听这些事件，在特定时间点介入编译过程 |
 
-#### 插件机制
-
-##### tapable
-
-##### hook
 
 ## loader
+
+介绍：
 
 运行顺序：从右到左
 
@@ -262,7 +259,17 @@ webpack 自己实现了一套 `import`, 详细分析 `__webpack_require__`(TODO)
 
 ## plugin
 
+介绍：
+
 ### 核心原理
+
+关键：tap && call
+
+#### tapable
+
+地址：[tapable](https://github.com/webpack/tapable/)，dd
+
+#### hook
 
 ### 常用 plugin
 
