@@ -6,19 +6,24 @@ tags:
 categories: web
 ---
 
-Webpack 是一个打包模块化 Javascript 的工具，在 webpack 里**一切皆模块**，通过 `Loader` 转换文件，通过 `Plugin` 注入钩子，最后输出由多个模块组合成的文件。webpack 专注于构建模块化项目。
+Webpack 是一个打包模块化 Javascript 的工具，在 webpack 里**一切皆模块**，通过 **`Loader`** 转换文件，通过 **`Plugin`** 注入钩子，最后输出由多个模块组合成的文件。webpack 专注于构建模块化项目。
 
 <!-- more -->
 
-**<font color="red">以 webpack 5.x 为本文讲解版本。(篇幅太大，后续会再分篇详细论述)</font>**
+**<font color="red">以 webpack 5.x 为本文讲解版本。(篇幅太大，后续会再分篇详细论述)。</font>**
 
 ![2021-road-map](/images/web-webpack/webpack-slogan.png)
 
+**<font color="red">提前划重点：核心模块为 Loader 和 Plugin 两种开放接口。</font>**
+
+
 ## 入门篇
+
+老样子，先动手搭建基础款的 Webpack 项目：
 
 ### 安装依赖
 
-初始化项目：
+1. 初始化项目：
 
 ```Shell
     mkdir webpack-demo
@@ -26,27 +31,29 @@ Webpack 是一个打包模块化 Javascript 的工具，在 webpack 里**一切�
     npm init -y
 ```
 
-安装相关依赖：
+2. 安装相关依赖：
 
 ```Shell
     # webpack 4.0 后需要同时安装 webpack-cli
     npm install webpack webpack-cli -D
 ```
 
-- webpack: [核心编译工具](https://webpack.docschina.org/)。
+依赖说明：
+
+- webpack: 属于[核心编译工具](https://webpack.docschina.org/)。
 
 - webpack-cli: 由 webpack 抽取出来独立的 **.bin 命令库**，[提供控制台命令](https://webpack.docschina.org/api/cli/)，接收参数，执行构建工作（npx webpack）。
 
 ### 配置选项
 
-生成 `webpack` 的配置文件 `webpack.config.js`：
+3. 生成 `webpack` 的配置文件 `webpack.config.js`：
 
 ```Shell
     touch webpack.config.js
 ```
 
 <details>
-    <summary>配置文件内容</summary>
+    <summary>配置文件内容（必须仔细浏览一遍）</summary>
 
     ```JavaScript
         // TODO：在这里放上一个完整的 webpack 完整配置文件
@@ -55,12 +62,55 @@ Webpack 是一个打包模块化 Javascript 的工具，在 webpack 里**一切�
         const HtmlWebpackPlugin = require('html-webpack-plugin');
         const ConsoleLogOnBuildWebpackPlugin = require('./plugin/ConsoleLogOnBuildWebpackPlugin');
 
+        //
         module.exports = {
             mode: 'development',
             entry: './src/index.js',
             output: {
                 path: path.resolve(__dirname, 'dist'),
                 filename: 'bundle.js',
+            },
+            // Webpack 5 之后引入了 Asset Module 模型，自此我们只需要设置适当的 module.rules.type 配置即可，不需要为多媒体资源专门引入 Loader
+            module: {
+                rules: [{
+                    test: /\.js$/,
+                    use: ["babel-loader"],
+                }, {
+                    test: /\.less$/i,
+                    include: {
+                        and: [path.join(__dirname, './src/')]
+                    },
+                    use: [
+                        "style-loader",
+                        "css-loader",
+                        {
+                            loader: "less-loader",
+                        },
+                    ],
+                }, {
+                    test: /\.(png|jpg)$/,
+                    use: [
+                        'file-loader',
+                        {
+                            loader: 'url-loader',
+                            options: {
+                                limit: 1024
+                            }
+                        },
+                        {
+                            loader: 'image-webpack-loader',
+                            options: {
+                            // jpeg 压缩配置
+                            mozjpeg: {
+                                quality: 80
+                            },
+                            }
+                        }
+                    ]
+                }, {
+                    test: /\.svg$/i,
+                    use: ['raw-loader'],
+                }],
             },
             plugins: [
                 new ConsoleLogOnBuildWebpackPlugin(),
@@ -74,7 +124,7 @@ Webpack 是一个打包模块化 Javascript 的工具，在 webpack 里**一切�
 
 ### 编写代码
 
-本处使用一个 import 引用的简单例子：
+4. 本处使用一个 import 引用的简单例子：
 
 ```Shell
     touch src/index.js
@@ -206,7 +256,9 @@ webpack 自己实现了一套 `import`, 详细分析 `__webpack_require__`(TODO)
     ```
 </details>
 
-## 核心流程机制
+基础项目的搭建和内容到此先告一段落，接下来就要开始涉及难懂的核心原理了。
+
+## 原理篇
 
 了解核心原理，首选边调试边查看的方式：
 
@@ -233,15 +285,17 @@ webpack 自己实现了一套 `import`, 详细分析 `__webpack_require__`(TODO)
 | Plugin | webpack构建过程中，会在特定的时机广播对应的事件，插件监听这些事件，在特定时间点介入编译过程 |
 
 
-## loader
+## 核心篇
+
+### loader
 
 介绍：
 
 运行顺序：从右到左
 
-### 核心原理
+#### 核心原理
 
-### 常用 loader
+#### 常用 loader
 
 | loader | 作用 |
 | :------ | :------: |
@@ -255,13 +309,13 @@ webpack 自己实现了一套 `import`, 详细分析 `__webpack_require__`(TODO)
 | posthtml-loader |  |
 | ts-loader |  |
 
-### 编写 loader
+#### 编写 loader
 
-## plugin
+### plugin
 
 介绍：
 
-### 核心原理
+#### 核心原理
 
 关键：tap && call
 
@@ -338,3 +392,5 @@ webpack 自己实现了一套 `import`, 详细分析 `__webpack_require__`(TODO)
 [1] <a href="https://www.webpackjs.com/">Webpack 官网</a><br>
 [2] <a href="https://gitmind.cn/app/docs/m1foeg1o">Webpack 5 知识体系</a><br>
 [2] <a href="https://mp.weixin.qq.com/s/SbJNbSVzSPSKBe2YStn2Zw">[万字总结] 一文吃透 Webpack 核心原理</a><br>
+
+https://mp.weixin.qq.com/s/E26Ll8-VGo4rnGeHdgNAVQ
