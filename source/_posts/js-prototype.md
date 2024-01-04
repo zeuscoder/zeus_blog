@@ -211,9 +211,7 @@ person.__proto__ === person.constructor.prototype ==== Person.prototype ==== Obj
 > * 原型对象会默认自动获得 constructor (构造函数) 属性，这个属性包含一个指向 prototype 属性所在函数的指针。<br>
 > * Person.prototype.constructor === Person
 
-<div align="center">
 ![prototype](https://cloud-minapp-11144.cloud.ifanrusercontent.com/1hYBRP8Cwpq1G7ZK.png)
-</div>
 
 代码读取对象的属性时，搜索顺序：对象本身的属性 -> 原型对象的属性；对象本身的属性会屏蔽原型对象的同名属性，而不是删除，一旦在对象属性搜索到目标属性的话，就不会往下搜索了。还有对象实例可以访问到原型中的值，却不能通过对象实例重写原型中的值。<br>
 可以通过 instance.hasOwnProperty(propertyName) 来判断是否是对象属性。
