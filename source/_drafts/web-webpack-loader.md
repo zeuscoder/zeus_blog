@@ -23,7 +23,7 @@ Loader API：[接口配置](https://webpack.docschina.org/api/loaders/)
 
 配置讲解：
 
-pitch
+pitch 需要单独拿来讲
 
 ### 案例分析
 
