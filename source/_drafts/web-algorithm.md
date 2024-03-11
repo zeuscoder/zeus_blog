@@ -9,7 +9,7 @@ tags:
 
 ***
 
-> 一句话总结：算法的本质就是「穷举」，而穷举有两个关键难点：无遗漏、无冗余。
+> 一句话总结：算法的本质就是「穷举」，而穷举有两个关键难点：**无遗漏、无冗余**。
 
 ***
 
@@ -91,7 +91,7 @@ node3.next = node1.next
 node1.next = node3
 ```
 
-插入结点：
+删除结点：
 
 ```JavaScript
 // 利用 node1 可以定位到 node3
@@ -101,15 +101,16 @@ node1.next = target.next
 
 ### 二叉树（演变结构）
 
+二叉树结点的构造函数：
+
 ```JavaScript
-// 二叉树结点的构造函数
 function TreeNode(val) {
     this.val = val;
     this.left = this.right = null;
 }
 ```
 
-二叉树问题的重中之重便是**遍历**。先学会二叉树的各种遍历方式：
+二叉树问题的重中之重便是**遍历**及其相关的演变。先学会二叉树的各种遍历方式（四种）：
 
 * 前序遍历
 * 中序遍历
@@ -322,15 +323,21 @@ var backtrack = function(root) {
   }
 };
 ```
-
+<span style="color: red">牢记，核心中的核心：前序位置（的代码）是进入一个节点的时候，后序位置（的代码）是离开一个节点的时候！！！！！</span>
 
 ### 二分搜索
 
+适用数据类型：有序数组。
+
 ### 双指针
+
+适用类型：数组、链表、字符串。
 
 双指针分两种类型：__快慢指针和左右指针（对撞指针）__。
 
 #### 滑动窗口（快慢指针）
+
+适用数据类型：字符串、数组。
 
 套路框架：
 
@@ -350,6 +357,12 @@ while (left < right && right < s.length) {
 }
 ```
 
+运用滑动窗口算法，具体要回答下面几个问题：
+
+1. 什么时候应该扩大窗口？
+2. 什么时候应该缩小窗口？
+3. 什么时候应该更新答案？
+
 #### 左右指针
 
 主要应用在**数组和字符串**上，因为该数据结构具备**前后下标**。
@@ -363,7 +376,16 @@ while (left < right && right < s.length) {
 
 ## 经验总结（重点浓缩版）
 
-写算法题的小经验：如果有返回值，记得先写 return 。
+1. 涉及链表操作、尤其是涉及结点删除的题目，建议大家写代码的时候直接把 dummy 节点（虚拟头节点）给用起来，建立好的编程习惯。
+
+```Javascript
+const dummy = new ListNode()
+// 这里的 head 是链表原有的第一个结点
+dummy.next = head
+```
+
+
+2. 写算法题的小经验：如果有返回值，记得先写 return 。
 
 ```Javascript
 function dp () {
@@ -373,6 +395,18 @@ function dp () {
 }
 ```
 
+3. 单链表常考的技巧就是双指针，特别出现【倒数】字眼（因为链表是不知道自身长度的）。
+
+```Javascript
+const removeNthFromEnd = function(head, n) {
+    // 初始化 dummy 结点
+    const dummy = new ListNode()
+    // dummy指向头结点
+    dummy.next = head
+    // 初始化快慢指针，均指向dummy
+    let fast = dummy
+    let slow = dummy
+```
 
 
 
