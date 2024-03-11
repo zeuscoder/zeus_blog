@@ -9,19 +9,126 @@ tags:
 
 ***
 
+> 一句话总结：算法的本质就是「穷举」，而穷举有两个关键难点：无遗漏、无冗余。
+
+***
+
 > 本文讲解题目全部来源于 [leetcode](https://leetcode.cn/problemset/)，请根据题目序号查看题目内容。
 
 ***
 
 ## 数据结构
 
-### 二叉树
+数据结构的存储方式只有两种：__数组（顺序存储）__ 和 __链表（链式存储）__ ，其余可以先忽略不计。
 
-前中后序遍历
+### 数组
+
+
+数组（二维数组）的核心是**初始化和遍历**，以及很多常用的 API。
+
+数组初始化：
+
+```JavaScript
+const arr = new Array()
+const arr = new Array(8)
+const arr = (new Array(8)).fill(1)
+
+const arr = []
+
+// 二维数组
+for(let i = 0; i < arr.length; i++) {
+    arr[i] = []
+}
+```
+
+数组遍历：
+
+```JavaScript
+for(let i = 0; i < arr.length; i++) {
+    console.log(arr[i], i)
+}
+
+arr.forEach((item, index) => {
+    console.log(item, index)
+})
+
+const newArr = arr.map((item, index) => {
+    console.log(item, index)
+    return item + 1
+})
+```
+
+常用 API：`concat`、`some`、`slice`、`splice`、`join`、`sort`、`pop`、`push` 等等。
 
 ### 链表
 
-### 数组
+链表中，数据单位的名称叫做“结点”，而结点和结点的分布，在内存中可以是离散的。
+
+结点数据结构：
+
+```JavaScript
+function ListNode(val) {
+    this.val = val;
+    this.next = null;
+}
+```
+
+创建结点：
+
+```JavaScript
+const node = new ListNode(1)
+node.next = new ListNode(2)
+```
+
+插入结点：
+
+```JavaScript
+// 如果目标结点本来不存在，那么记得手动创建
+const node3 = new ListNode(3)
+// 把node3的 next 指针指向 node2（即 node1.next）
+node3.next = node1.next
+// 把node1的 next 指针指向 node3
+node1.next = node3
+```
+
+插入结点：
+
+```JavaScript
+// 利用 node1 可以定位到 node3
+const target = node1.next
+node1.next = target.next
+```
+
+### 二叉树（演变结构）
+
+二叉树问题的重中之重便是**遍历**。先学会二叉树的各种遍历方式：
+
+* 前序遍历
+* 中序遍历
+* 后序遍历
+* 层次遍历
+
+前三种属于递归遍历，最后一种属于迭代遍历。
+
+```JavaScript
+// 所有遍历函数的入参都是树的根结点对象
+var traverse = function(root) {
+    if (root === null) {
+        return;
+    }
+    // 前序位置
+    // console.log('当前遍历的结点值是：', root.val)
+    traverse(root.left);
+    // 中序位置
+    traverse(root.right);
+    // 后序位置
+}
+```
+
+总结：这里指的前中后顺序，关键就在于 __root.val__ 语句的处理位置。
+
+
+
 
 ## 方法论
 
@@ -171,11 +278,56 @@ var coinChange = function(coins, amount) {
 [70.排楼梯](https://leetcode-cn.com/problems/climbing-stairs/description/)
 [198. 打家劫舍](https://leetcode-cn.com/problems/house-robber/descrip+tion/)
 
-### 0-1 背包模型
+#### 0-1 背包模型（动态规划升级版）
 
-### 回溯算法
+DP table 通常是一个数组，但在背包问题中，需要升级为二维数组，并求出对应二维下标的目标值是多少。
 
-## 经验总结
+```JavaScript
+int[][] dp[N+1][W+1]
+dp[0][..] = 0
+dp[..][0] = 0
+
+for i in [1..N]:
+    for w in [1..W]:
+        dp[i][w] = max(
+            把物品 i 装进背包,
+            不把物品 i 装进背包
+        )
+return dp[N][W]
+```
+
+### 回溯算法（backtrack）
+
+套路框架：
+
+```JavaScript
+var backtrack = function(root) {
+  if (root == null) return;
+
+  for (var i = 0; i < root.children.length; i++) {
+    var child = root.children[i];
+    // 做选择
+    printf("从 " + root + " 到 " + child);
+    backtrack(child);
+    // 撤销选择
+    printf("从 " + child + " 到 " + root);
+
+  }
+
+};
+```
+
+
+### 二分搜索
+
+### 双指针
+
+双指针分两种类型：__快慢指针（滑动窗口算法）和左右指针__。
+
+#### 滑动窗口
+
+
+## 经验总结（重点浓缩版）
 
 写算法题的小经验：如果有返回值，记得先写 return 。
 
