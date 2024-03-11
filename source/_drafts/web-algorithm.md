@@ -319,9 +319,7 @@ var backtrack = function(root) {
     backtrack(child);
     // 撤销选择
     printf("从 " + child + " 到 " + root);
-
   }
-
 };
 ```
 
@@ -334,13 +332,32 @@ var backtrack = function(root) {
 
 #### 滑动窗口（快慢指针）
 
+套路框架：
+
+```JavaScript
+let left = 0, right = 0;
+let window = [];
+while (left < right && right < s.length) {
+    // 增大窗口
+    window.add(s[right]);
+    right++;
+
+    while (window needs shrink) {
+        // 缩小窗口
+        window.remove(s[left]);
+        left++;
+    }
+}
+```
 
 #### 左右指针
 
-关键字：__有序__ 和 __数组__。
+主要应用在**数组和字符串**上，因为该数据结构具备**前后下标**。
+
+关键字：**有序**和**数组**。
 
 相关问题：
-[1.两数之和](https://leetcode-cn.com/problems/climbing-stairs/description/)
+[1.两数之和](https://leetcode.cn/problems/two-sum/)
 [15. 三数之和](https://leetcode.cn/problems/3sum/description/)
 
 
