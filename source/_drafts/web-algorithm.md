@@ -101,6 +101,14 @@ node1.next = target.next
 
 ### 二叉树（演变结构）
 
+```JavaScript
+// 二叉树结点的构造函数
+function TreeNode(val) {
+    this.val = val;
+    this.left = this.right = null;
+}
+```
+
 二叉树问题的重中之重便是**遍历**。先学会二叉树的各种遍历方式：
 
 * 前序遍历
@@ -322,9 +330,18 @@ var backtrack = function(root) {
 
 ### 双指针
 
-双指针分两种类型：__快慢指针（滑动窗口算法）和左右指针__。
+双指针分两种类型：__快慢指针和左右指针（对撞指针）__。
 
-#### 滑动窗口
+#### 滑动窗口（快慢指针）
+
+
+#### 左右指针
+
+关键字：__有序__ 和 __数组__。
+
+相关问题：
+[1.两数之和](https://leetcode-cn.com/problems/climbing-stairs/description/)
+[15. 三数之和](https://leetcode.cn/problems/3sum/description/)
 
 
 ## 经验总结（重点浓缩版）
