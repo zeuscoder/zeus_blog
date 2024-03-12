@@ -99,6 +99,10 @@ const target = node1.next
 node1.next = target.next
 ```
 
+// TODO：分析下链表的几项基础类型题目
+
+环形链表基本问题——如何判断链表是否成环？
+
 ### 二叉树（演变结构）
 
 二叉树结点的构造函数：
@@ -307,6 +311,8 @@ return dp[N][W]
 
 ### 回溯算法（backtrack）
 
+应用场景：排列、组合、子集问题。
+
 套路框架：
 
 ```JavaScript
@@ -323,7 +329,42 @@ var backtrack = function(root) {
   }
 };
 ```
-<span style="color: red">牢记，核心中的核心：前序位置（的代码）是进入一个节点的时候，后序位置（的代码）是离开一个节点的时候！！！！！</span>
+
+<span style="color: red">牢记，核心中的核心：前序位置（的代码）是进入一个节点的时候，后序位置（的代码）是离开一个节点的时候！！！</span>
+
+
+
+### BFS（广度优先搜素）
+
+BFS 算法都是用**队列**这种数据结构，每次将一个节点周围的所有节点加入队列。
+每次把下一行的所有节点先存放在队列中，放到下一次轮询来遍历，以此类推。
+
+套路框架：
+
+```JavaScript
+function BFS(root) {
+    const queue = [] // 初始化队列queue
+    // 根结点首先入队
+    queue.push(root)
+    // 队列不为空，说明没有遍历完全
+    while(queue.length) {
+        const top = queue[0] // 取出队头元素
+        // 访问 top
+        console.log(top.val)
+        // 如果左子树存在，左子树入队
+        if(top.left) {
+            queue.push(top.left)
+        }
+        // 如果右子树存在，右子树入队
+        if(top.right) {
+            queue.push(top.right)
+        }
+        queue.shift() // 访问完毕，队头元素出队
+    }
+}
+```
+
+ 111 题「二叉树的最小深度」
 
 ### 二分搜索
 
