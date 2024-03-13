@@ -426,7 +426,7 @@ Watcher 和 Dep 的关系图：多对多
 
 虚拟 DOM 的执行流程：
 
-![patch]](/images/js-vue/patch.png)
+![patch](/images/js-vue/patch.png)
 
 ##### VNode
 
@@ -510,7 +510,7 @@ patch 对现有 DOM 进行修改需要做三件事：
 
 **渲染函数是创建 HTML 最原始的方法。模板最终会通过编译转换成渲染函数，渲染函数执行后，会得到一份 vnode 用于虚拟 DOM 渲染。**
 
-![patch]](/images/js-vue/render.png)
+![patch](/images/js-vue/render.png)
 
 模板编译成渲染函数可以分两个步骤：
 
@@ -531,7 +531,7 @@ patch 对现有 DOM 进行修改需要做三件事：
 
 模板编译的整体流程：
 
-![patch]](/images/js-vue/render-part.png)
+![patch](/images/js-vue/render-part.png)
 
 ##### 解析器
 
@@ -656,7 +656,7 @@ _update
 
 #### 全局篇
 
-![patch]](/images/js-vue/new-vue.png)
+![patch](/images/js-vue/new-vue.png)
 
 参考文章：
 
