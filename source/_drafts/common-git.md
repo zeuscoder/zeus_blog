@@ -4,6 +4,9 @@ tags:
 ---
 
 
+
+<!-- more -->
+
 ![总结](/images/common-git/all.png)
 
 
