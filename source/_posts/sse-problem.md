@@ -15,7 +15,7 @@ tags:
 
 #### 客户端
 
-除了 IE 浏览器不能用，基本无坑。使用方法简易，具体可参考 [MDN](https://developer.mozilla.org/zh-CN/docs/Web/API/EventSource)。
+除了 IE 浏览器不能用，基本无坑。使用方法简易，具体可参考 [MDN EventSource](https://developer.mozilla.org/zh-CN/docs/Web/API/EventSource)。
 
 ```JavaScript
 const evtSource = new EventSource("/sse");
@@ -26,6 +26,8 @@ evtSource.onmessage = (e) => {
 ```
 
 #### 服务端
+
+采用 express.js 实现一个 nodejs 后端服务：
 
 ```JavaScript
 const express = require('express');
@@ -81,7 +83,7 @@ Connection: keep-alive
 X-Accel-Buffering: no
 ```
 
-- `Cache-Control` 中需要包含 `no-transform`，开发时，如果使用了 `create-react-app` 等工具来转发请求，数据流很可能被压缩，造成怎么也收不到响应。[issue](https://github.com/facebook/create-react-app/issues/1633)
+- `Cache-Control` 中需要包含 `no-transform`，开发时，如果使用了 `create-react-app` 等工具来转发请求，数据流很可能被压缩（检查 proxy 的 compress 配置是否为 true），造成怎么也收不到响应。[issue](https://github.com/facebook/create-react-app/issues/1633)
 
 - `no-transform` 是开发环境中的遇到的问题，但是在生产环境仍然还存在问题。
 
