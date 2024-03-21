@@ -43,6 +43,7 @@ renderToString(app).then((html) => {
 
 两大核心问题：**服务端首屏渲染**和**客户端激活**。
 
+![ssr](/images/vue-ssr/ssr.png)
 
 总结: 首屏渲染只获取一次 html。后续切换就开始使用 vue 的功能了。
 
