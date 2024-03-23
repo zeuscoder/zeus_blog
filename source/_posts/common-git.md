@@ -58,6 +58,8 @@ $ git commit --amend -m [message]
 ```Shell
 # 重置当前分支的HEAD为指定commit，同时重置暂存区和工作区，与指定commit一致
 $ git reset --hard [commit]
+
+$ git push --force
 ```
 
 #### 回滚 add
