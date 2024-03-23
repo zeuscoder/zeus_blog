@@ -22,7 +22,7 @@ tags:
 
 **关于常用的 git 命令，可以直接查看阮一峰大佬的 [常用 Git 命令清单](https://www.ruanyifeng.com/blog/2015/12/git-cheat-sheet.html)。**
 
-从下载到更新项目的命令：
+### 从下载到更新项目的命令
 
 ```Shell
 # 下载一个项目和它的整个代码历史
@@ -44,7 +44,7 @@ $ git commit -m [message]
 $ git push [remote] [branch]
 ```
 
-开发时使用频率高的命令：
+### 开发时使用频率高的命令
 
 #### 重写 commit 的提交信息
 
@@ -75,7 +75,7 @@ $ git stash
 $ git stash pop
 ```
 
-排查时使用频率高的命令：
+### 排查时使用频率高的命令
 
 #### 查看变更文件信息
 
