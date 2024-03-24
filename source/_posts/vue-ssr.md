@@ -22,6 +22,41 @@ SSR:
 
 ![SSR](/images/vue-ssr/ssr.png)
 
+SSR、CSR、同构渲染之间的对比：
+
+<table>
+    <tr>
+        <td></td>
+        <td>SSR</td>
+        <td>CSR</td>
+        <td>同构渲染</td>
+    </tr>
+    <tr>
+        <td>SEO</td>
+        <td>友好</td>
+        <td>不友好</td>
+        <td>友好</td>
+    </tr>
+    <tr>
+        <td>白屏问题</td>
+        <td>无</td>
+        <td>有</td>
+        <td>无</td>
+    </tr>
+    <tr>
+        <td>占用服务端资源</td>
+        <td>多</td>
+        <td>少</td>
+        <td>中</td>
+    </tr>
+    <tr>
+        <td>用户体验</td>
+        <td>差</td>
+        <td>好</td>
+        <td>好</td>
+    </tr>
+</table>
+
 关于 `SSR` 与 `CSR` 的区别，在 `Vue SSR` 文章中已经给出了答案。具体可看 [服务端渲染 (SSR)](https://cn.vuejs.org/guide/scaling-up/ssr)：
 
 - 更好的 SEO：搜索引擎爬虫可以直接看到完全渲染的页面（**首要原因，官网项目首选**）。
@@ -58,6 +93,8 @@ export function createApp() {
 }
 ```
 
+小插曲：【同构】的含义是，同样一套代码即可以在服务端运行，也可以在客户端运行（Vue.js 的组件即可以在服务端运行，被渲染为 HTML 字符串；也可以在客户端运行，就像普通的 CSR 应用程序一样）。 **<font color="red">同构渲染，组件的代码会在服务端和客户端分别执行一次。</font>**
+
 服务端代码：
 
 ```JavaScript
@@ -85,9 +122,15 @@ renderToString(app).then((html) => {
 
 `renderToString()` 接收一个**Vue 应用实例**作为参数，返回一个 Promise，当 Promise resolve 时得到应用渲染的 HTML，嵌入到 HTML 模板中并返回给浏览器。
 
-#### 客户端激活
+#### 客户端激活(hydration)
 
 客户端激活指的是 Vue 在**浏览器端**接管由服务端发送的静态 HTML，使其变为由 Vue 管理的动态 DOM 的过程。
+
+在浏览器运行时主要做两件事：
+- 在页面中的 `DOM` 元素与虚拟节点对象之间建立联系
+- 为页面中的 `DOM` 元素添加事件绑定（服务端渲染时会忽略节点中与事件相关的 `props`）
+
+**但不会再次创建 `DOM` 元素。**
 
 客户端代码：
 
@@ -103,7 +146,7 @@ createApp().mount('#app')
 
 将 `<script type="module" src="/client.js"></script>` 添加到 HTML 外壳以加载客户端入口文件。
 
-总结: 首屏渲染只获取一次 html 文件，后续路由变化或等事件都是请求 js 文件，真正地复用 vue 的 spa 功能。
+总结: 只在首屏渲染时获取一次 html 文件，**激活完成后，整个应用程序已经完全被 `Vue.js` 接管为 `CSR` 应用程序了**。后续路由变化或等事件都是请求 js 文件，真正地复用 `Vue.js` 的 spa 功能。
 
 [代码完整实例](/vue-ssr-example.zip)，可自行下载运行。
 
@@ -111,7 +154,7 @@ createApp().mount('#app')
 
 #### Nuxt
 
-#### Quasar
+可移步至  [WEB：Next Nuxt Nest 傻傻分不清楚]()
 
 #### Vite SSR
 
@@ -120,3 +163,5 @@ createApp().mount('#app')
 [服务端渲染 (SSR)](https://cn.vuejs.org/guide/scaling-up/ssr)
 
 [理解Vue SSR原理，搭建项目框架](https://juejin.cn/post/6950802238524620837?searchId=20240321112333AB6B0212A536DE53B864)
+
+[Vue.js 设计与实现 第六篇：服务端渲染]()
