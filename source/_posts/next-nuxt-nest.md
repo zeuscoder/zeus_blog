@@ -1,7 +1,9 @@
 ---
 title: WEB：Next Nuxt Nest 傻傻分不清楚
+date: 2023-04-18 16:37:05
 tags:
 ---
+
 
 `Next` 和 `Nuxt` 是常见的 `SSR` 框架，而 `Nest` 是 `Nodejs` 服务器端应用的框架。
 <!-- more -->

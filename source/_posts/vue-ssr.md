@@ -154,7 +154,7 @@ createApp().mount('#app')
 
 #### Nuxt
 
-可移步至  [WEB：Next Nuxt Nest 傻傻分不清楚]()
+可移步至  [WEB：Next Nuxt Nest 傻傻分不清楚](https://zeuscoder.github.io/2023/04/18/next-nuxt-nest/)
 
 #### Vite SSR
 
