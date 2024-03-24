@@ -114,6 +114,13 @@ $ git log -S [keyword]
 $ git reflog
 ```
 
+### 总结
+
+常用命令速查表
+
+![常用命令速查表](/images/common-git/shell.png)
+
+
 参考文章：
 
 [常用 Git 命令清单](https://www.ruanyifeng.com/blog/2015/12/git-cheat-sheet.html)
