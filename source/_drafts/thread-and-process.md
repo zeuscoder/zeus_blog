@@ -35,6 +35,11 @@ nginx
 nodejs
 redis
 
+eggjs cluster
+
 https://vue3js.cn/interview/linux/thread_process.html#%E4%B8%80%E3%80%81%E8%BF%9B%E7%A8%8B
 
 https://zhuanlan.zhihu.com/p/490318618
+
+
+https://zhuanlan.zhihu.com/p/139104143
