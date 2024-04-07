@@ -65,14 +65,17 @@ module.exports = function (source) {
 };
 ```
 
-
-VueLoaderPlugin 的作用？
-
-
-
 转化后的结果：
 
 ![loader-result](/images/webpack-loader/vue-loader-result.png)
+
+
+VueLoaderPlugin 的作用？
+
+pitcher
+
+selectBlock
+
 
 总结：
 
