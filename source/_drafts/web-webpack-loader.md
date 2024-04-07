@@ -52,6 +52,11 @@ module.exports = {
 };
 ```
 
+#### 原理分析
+
+详见 `vue-loader` [readme.md](https://github.com/vuejs/vue-loader/blob/master/README.md)
+
+
 ```Javascript
 // vue-loader lib/index.js
 
