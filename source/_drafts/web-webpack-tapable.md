@@ -59,3 +59,9 @@ Tabable 提供如下类型的钩子：
 按执行回调的并行方式，分为：
 * sync ：同步执行，启动后会按次序逐个执行回调，支持 call/tap 调用语句；
 * async ：异步执行，支持传入 callback 或 promise 风格的异步回调函数，支持 callAsync/tapAsync 、promise/tapPromise 两种调用语句
+
+**查看 [webpack plugin hook](https://webpack.js.org/api/compiler-hooks/) 类型与用法。**
+
+> 提示：Webpack 官方文档并没有覆盖介绍所有钩子，必要时建议读者直接翻阅 Webpack 源码，分析钩子类型。
+
+虽然多数情况下我们不需要手动调用 Tapable，但编写插件时可以借助这些知识，识别 Hook 类型与执行特性后，正确地调用，正确地实现交互。
