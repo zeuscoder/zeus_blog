@@ -87,3 +87,7 @@ Tabable 提供如下类型的钩子：
 * async ：异步执行，支持传入 callback 或 promise 风格的异步回调函数，支持 callAsync/tapAsync 、promise/tapPromise 两种调用语句
 
  ### 原理浅析
+
+
+![1](https://dennisgo.cn/Articles/Engineering/tapable-source-code.html)
+![1](https://github.com/darrell0904/webpack-doc/blob/master/docs/chapter4/webpack_process.md)
