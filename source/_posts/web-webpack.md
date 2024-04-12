@@ -269,7 +269,7 @@ webpack 自己实现了一套 `import`, 详细分析 `__webpack_require__`(TODO)
 
 ### 核心流程图
 
-// TODO：这里急需一张从代码到构建产物的流程图
+![核心流程图](/images/web-webpack/webpack-core.png)
 
 ### 架构
 
