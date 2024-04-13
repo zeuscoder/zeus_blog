@@ -3,8 +3,16 @@ title: WEB：webpack tapable
 tags:
 ---
 
- Webpack 的插件体系是一种基于 [Tapable](https://github.com/webpack/tapable) 实现的强耦合架构。
+ `Webpack` 的插件体系是一种基于 [Tapable](https://github.com/webpack/tapable) 实现的强耦合架构，在特定时机触发钩子时会附带上足够的上下文信息。插件定义的钩子回调中，能也只能与这些上下文背后的数据结构、接口交互产生 side effect，进而影响到编译状态和后续流程。
  <!-- more -->
+
+`tapable` 可以说是增强版的**发布订阅模式**，类似的库还有不少：
+
+* `redux` 的 `subscribe` 和 `dispatch`
+* `Node.js` 的 `EventEmitter`
+* `redux-saga` 的 `take` 和 `put`
+
+### 基础用法
 
 `Tapable` 的基础用法
 
@@ -32,6 +40,24 @@ sleep.call();
 * 调用订阅接口注册回调，包括：tap、tapAsync、tapPromise；
 * 调用发布接口触发回调，包括：call、callAsync、promise。
 
+### 具体用法
+
+查看源码，发现官方提供的 API，[Readme 传送门](https://github1s.com/webpack/tapable)：
+
+```Javascript
+const {
+    SyncHook,
+    SyncBailHook,
+    SyncWaterfallHook,
+    SyncLoopHook,
+    AsyncParallelHook,
+    AsyncParallelBailHook,
+    AsyncSeriesHook,
+    AsyncSeriesBailHook,
+    AsyncSeriesLoopHook,
+    AsyncSeriesWaterfallHook
+ } = require("tapable");
+```
 
 Tabable 提供如下类型的钩子：
 
@@ -60,8 +86,33 @@ Tabable 提供如下类型的钩子：
 * sync ：同步执行，启动后会按次序逐个执行回调，支持 call/tap 调用语句；
 * async ：异步执行，支持传入 callback 或 promise 风格的异步回调函数，支持 callAsync/tapAsync 、promise/tapPromise 两种调用语句
 
+
 **查看 [webpack plugin hook](https://webpack.js.org/api/compiler-hooks/) 类型与用法。**
 
 > 提示：Webpack 官方文档并没有覆盖介绍所有钩子，必要时建议读者直接翻阅 Webpack 源码，分析钩子类型。
 
 虽然多数情况下我们不需要手动调用 Tapable，但编写插件时可以借助这些知识，识别 Hook 类型与执行特性后，正确地调用，正确地实现交互。
+
+### 高级特性
+
+#### Intercept
+
+#### HookMap
+
+### 原理浅析
+
+Hook 动态编译
+
+![alt text](/images/webpack-tapable/image.png)
+
+编译过程主要涉及三个实体：
+
+* tapable/lib/SyncHook.js ：定义 SyncHook 的入口文件；
+* tapable/lib/Hook.js ：SyncHook 只是一个代理接口，内部实际上调用了 Hook 类，由 Hook 负责实现钩子的逻辑（其它钩子也是一样的套路）；
+* tapable/lib/HookCodeFactory.js ：动态编译出 call、callAsync、promise 函数内容的工厂类，注意，其他钩子也都会用到 HookCodeFactory 工厂函数。
+
+tapable 提供的大多数特性都是基于 Hook + HookCodeFactory 实现的
+
+参考文章：
+
+[webpack核心模块tapable源码解析](https://dennisgo.cn/Articles/Engineering/tapable-source-code.html)
