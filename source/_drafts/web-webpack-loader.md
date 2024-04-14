@@ -81,6 +81,10 @@ pitcher
 
 selectBlock
 
+### 自定义loader
+
+babel-loader
+
 
 总结：
 
