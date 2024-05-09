@@ -85,7 +85,27 @@ function withTiming(WrappedComponent) {
 export default withTiming(Home);
 ```
 
+React Hooks
 
+useState
+
+useEffect
+
+useContext
+
+useReducer
+
+useCallback
+
+useMemo
+
+useRef
+
+useImperativeHandle
+
+useLayoutEffect
+
+useDebugValue
 
 
 
