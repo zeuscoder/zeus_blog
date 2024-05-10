@@ -20,7 +20,6 @@ function Welcome(props) {
 }
 ```
 
-
 ```javascript
 const FunctionalComponent = () => {
     const [count, setCount] = React.useState(0);
@@ -33,8 +32,6 @@ const FunctionalComponent = () => {
     );
 };
 ```
-
-
 
 ```javascript
 const FunctionalComponent = () => {
@@ -85,7 +82,11 @@ function withTiming(WrappedComponent) {
 export default withTiming(Home);
 ```
 
+
+
 React Hooks
+
+`Hook` 是 React 16.8 的新增特性。它可以让你在不编写 `class` 的情况下使用 `state` 以及其他的 `React` 特性
 
 useState
 
@@ -107,21 +108,32 @@ useLayoutEffect
 
 useDebugValue
 
-
-
 双缓存机制
-
-
 
 ### **`Firbe`架构**
 
-
-
-
 hooks
 
+setState
 
-setState 
+
+```js
+React.createElement
+```
+
+
+
+react-redux
+
+
+react-router
+
+
+render 
+
+
+
+
 
 [《React设计原理》读书分享–框架概述 - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/629657853)
 
