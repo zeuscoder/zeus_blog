@@ -8,6 +8,8 @@ Vue 3.X，又是一次新的开始。
 
 <!-- more -->
 
+**要显示一个完整的 vue 页面，关键的两部分是围绕 render 和 renderer 两个函数！！！**
+
 ![alt text](/images/vue-next/summary.png)
 
 **关键词：Reactivity（Proxy & Reflect、handler、Effect、computed、watch）、Compiler（compile、parse、transform、codegen）、Renderer（render）、VNode（VDom）、Diff。**
@@ -68,6 +70,10 @@ Vue 3.X，又是一次新的开始。
 #### Effect
 
 
+vue-cli 打包后的产物不带编译版本，因为已经预编译过了，所以会去除 vue 的 compiler 模块。
+
+vue.config.js runtimeCompiler 配置项的作用是：在开发环境下，让 vue-loader 把 vue 文件编译成 render 函数，并保留编译后的结果，以供开发环境使用。
+
 
 
 renderEffect: effect 副作用钩子 === watcher
@@ -90,6 +96,8 @@ watch deep true
 
 
 ### 
+
+leetcode 接雨水算法
 
 
 Vue.js 的内部实现一定是命令式的，而暴露给用户的却更加声明式。(傻瓜式)
