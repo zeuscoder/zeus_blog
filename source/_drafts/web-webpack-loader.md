@@ -2,8 +2,8 @@
 title: WEB：webpack loader
 tags:
 ---
-
 Webpack Loader 本质上是导出为函数的 **JavaScript 模块**，主要负责将资源内容翻译成 Webpack 能够理解、处理的 JavaScript 代码。
+
 <!-- more -->
 
 ### 基础内容
@@ -56,7 +56,6 @@ module.exports = {
 
 详见 `vue-loader` [readme.md](https://github.com/vuejs/vue-loader/blob/master/README.md)
 
-
 ```Javascript
 // vue-loader lib/index.js
 
@@ -74,7 +73,6 @@ module.exports = function (source) {
 
 ![loader-result](/images/webpack-loader/vue-loader-result.png)
 
-
 VueLoaderPlugin 的作用？
 
 pitcher
@@ -85,7 +83,6 @@ selectBlock
 
 babel-loader
 
-
 总结：
 
 ![loader-summary](/images/webpack-loader/vue-loader-summary.png)
@@ -93,3 +90,5 @@ babel-loader
 参考文章：
 
 [图解 VueLoader : .vue 文件是如何被打包的?](https://www.infoq.cn/article/lBI6h9AXeBBkGuRvYPtO)
+
+[vue-loader &amp;vue-template-compiler详解 ](https://zhuanlan.zhihu.com/p/114239056)

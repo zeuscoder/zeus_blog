@@ -82,8 +82,6 @@ function withTiming(WrappedComponent) {
 export default withTiming(Home);
 ```
 
-
-
 React Hooks
 
 `Hook` 是 React 16.8 的新增特性。它可以让你在不编写 `class` 的情况下使用 `state` 以及其他的 `React` 特性
@@ -116,28 +114,24 @@ hooks
 
 setState
 
-
 ```js
 React.createElement
 ```
 
-
+ReactDOM.render(element, container[, callback])
 
 react-redux
 
-
 react-router
 
-
-render 
-
-
-
+render
 
 `jsx`首先会转化成 `React.createElement`这种形式，`React.createElement`作用是生成一个虚拟 `Dom`对象，然后会通过 `ReactDOM.render`进行渲染成真实 `DOM`
 
 ### [#](https://vue3js.cn/interview/React/summary.html#%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%89%8B%E6%AE%B5%E6%9C%89%E5%93%AA%E4%BA%9B)
 
+
+https://juejin.cn/post/7116141318853623839?from=search-suggest
 
 
 [《React设计原理》读书分享–框架概述 - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/629657853)
