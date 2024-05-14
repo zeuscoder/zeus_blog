@@ -106,27 +106,26 @@ useLayoutEffect
 
 useDebugValue
 
+**核心：`React.createElement` && `ReactDOM.render(element, container[, callback])`**
+
 双缓存机制
 
 ### **`Firbe`架构**
 
-hooks
+Fragment
 
 setState
-
-```js
-React.createElement
-```
-
-ReactDOM.render(element, container[, callback])
 
 react-redux
 
 react-router
 
-render
 
 `jsx`首先会转化成 `React.createElement`这种形式，`React.createElement`作用是生成一个虚拟 `Dom`对象，然后会通过 `ReactDOM.render`进行渲染成真实 `DOM`
+
+组件在初始化时，会通过调用生命周期中的 render 方法，生成虚拟 DOM，然后再通过调用 ReactDOM.render 方法，实现虚拟 DOM 到真实 DOM 的转换。
+
+当组件更新时，会再次通过调用 render 方法生成新的虚拟 DOM，然后借助 diff（这是一个非常关键的算法，我将在“模块二：核心原理”重点讲解）定位出两次虚拟 DOM 的差异，从而针对发生变化的真实 DOM 作定向更新。
 
 ### [#](https://vue3js.cn/interview/React/summary.html#%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%89%8B%E6%AE%B5%E6%9C%89%E5%93%AA%E4%BA%9B)
 
@@ -134,7 +133,7 @@ render
 
 https://juejin.cn/post/7116141318853623839?from=search-suggest
 
-[构建你自己的 React --- Build your own React (pomb.us)](https://pomb.us/build-your-own-react/)
+
 
 [《React设计原理》读书分享–框架概述 - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/629657853)
 
@@ -145,3 +144,7 @@ https://juejin.cn/post/7116141318853623839?from=search-suggest
 如果先调用 `this`，再初始化 `super()`，同样是禁止的行为
 
 在 `React` 中，类组件是基于 `ES6` 的规范实现的，继承 `React.Component`，因此如果用到 `constructor` 就必须写 `super()` 才初始化 `this`
+
+参考文章：
+
+[构建你自己的 React --- Build your own React (pomb.us)](https://pomb.us/build-your-own-react/)
