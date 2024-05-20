@@ -7,16 +7,22 @@ Vue 和 React 在 diff 算法上都有自己的一套实现，不同版本在 di
 
 <!-- more -->
 
-### 简单 Diff
-
 ### Vue2
 
-双端 diff
+[Vue2 diff - 双端算法](https://zeuscoder.github.io/2023/10/02/vue2-diff/)
 
 ### Vue3
 
-[Vue3 diff - 最长递增子序列算法](https://zeuscoder.github.io/2023/10/04/vue3-diff/)
+[Vue3 diff - 快速算法](https://zeuscoder.github.io/2023/10/04/vue3-diff/)
 
-### React
+### React 15
 
-fiber
+[React 15 diff - 递归算法](https://zeuscoder.github.io/2023/10/03/react15-diff/)
+
+### React 16
+
+[React 16 diff - 协调算法](https://zeuscoder.github.io/2023/10/05/react16-diff/)
+
+### React 17    
+
+[React 17 diff - 并发算法](https://zeuscoder.github.io/2023/10/06/react17-diff/)
