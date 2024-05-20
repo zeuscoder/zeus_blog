@@ -104,7 +104,7 @@ const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, pa
 * **新子节点都没有了**，旧子节点有剩余要删除的多余节点；
 * **新子节点和旧子节点都同时还有剩余节点**，未知子序列。
 
-#### 新子节点添加新的节点
+#### 剩余新子节点-添加新的节点
 
 ```javascript
 const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, parentSuspense, isSVG, optimized) => {
@@ -145,7 +145,7 @@ const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, pa
 
 添加完 e 节点后，旧子节点的 DOM 和新子节点对应的 vnode 映射一致，也就完成了更新。
 
-#### 旧子节点删除多余节点
+#### 剩余旧子节点-删除多余节点
 
 ```javascript
 const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, parentSuspense, isSVG, optimized) => {
