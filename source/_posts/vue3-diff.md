@@ -3,8 +3,6 @@ title: vue3-diff
 date: 2023-10-04 18:40:25
 tags:
 ---
-
-
 Vue3 diff 算法与 Vue2 相比，最大的不同就是**不再使用双端比较算法**，而是**使用最长递增子序列算法**。
 
 > 最长递增子序列（Longest Increasing Subsequence，LIS）问题，是算法中经典的动态规划问题。
@@ -15,7 +13,7 @@ Vue3 diff 算法与 Vue2 相比，最大的不同就是**不再使用双端比�
 
 **其中核心算法函数为 `patchKeyedChildren` 函数****，**源码位于 `packages/runtime-core/src/renderer.ts`。
 
-<font color=red>**该函数分为 5 步，第 5 步又细分为 3 小步（复杂且关键），其中也包含了最长递增子序列的算法。**</font>
+`<font color=red>`**该函数分为 5 步，第 5 步又细分为 3 小步（复杂且关键），其中也包含了最长递增子序列的算法。**`</font>`
 
 > 前言：需要区分与 Vue2 不同的维护变量
 
@@ -98,7 +96,7 @@ const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, pa
 
 可以看到，完成尾部节点同步后：i 是 2，e1 是 1，e2 是 2。
 
-<font color=red>**中途总结：前面 2 步非常容易理解，就是先去头去尾，剩下新旧节点的中间部分。**</font>
+`<font color=red>`**中途总结：前面 2 步非常容易理解，就是先去头去尾，剩下新旧节点的中间部分。**`</font>`
 
 接下来只有 3 种情况要处理：
 
@@ -106,7 +104,7 @@ const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, pa
 * **新子节点都没有了**，旧子节点有剩余要删除的多余节点；
 * **新子节点和旧子节点都同时还有剩余节点**，未知子序列。
 
-#### 添加新的节点
+#### 新子节点添加新的节点
 
 ```javascript
 const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, parentSuspense, isSVG, optimized) => {
@@ -147,7 +145,7 @@ const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, pa
 
 添加完 e 节点后，旧子节点的 DOM 和新子节点对应的 vnode 映射一致，也就完成了更新。
 
-#### 删除多余节点
+#### 旧子节点删除多余节点
 
 ```javascript
 const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, parentSuspense, isSVG, optimized) => {
@@ -190,7 +188,7 @@ const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, pa
 
 删除完 c 节点后，旧子节点的 DOM 和新子节点对应的 vnode 映射一致，也就完成了更新。
 
-<font color=red>**中途总结：3 和 4 步的前提是基于新子节点或旧子节点有一方已经没有了（临近边界值情况下），直接挂载或卸载剩余节点。** </font>
+`<font color=red>`**中途总结：3 和 4 步的前提是基于新子节点或旧子节点有一方已经没有了（临近边界值情况下），直接挂载或卸载剩余节点。** `</font>`
 
 但是呢，如果两者都有剩余子序列，就需要进行最后一步了。
 
