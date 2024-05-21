@@ -54,7 +54,7 @@ function updateChildren(
   } 
 ```
 
-注意：后续**已处理过的旧子节点**中对应位置的 vnode 会被标记为 undefined，所以无需处理。
+<font color=red>注意：后续在第 5 步，在旧子节点中寻找与新首节点相同 key 的 vnode 过程中，**已处理过的旧子节点**中对应位置的 vnode 会被标记为 undefined，所以无需处理，跳过到下一个索引即可。</font>
 
 ### 1.1 旧头和新头比较
 
@@ -69,7 +69,6 @@ if (sameVnode(oldStartVnode, newStartVnode)) {
 ### 1.2 旧尾和新尾比较
 
 ```javascript
-    
 if (sameVnode(oldEndVnode, newEndVnode)) {
   patchVnode(oldEndVnode, newEndVnode, insertedVnodeQueue)
   oldEndVnode = oldCh[--oldEndIdx]
@@ -96,7 +95,7 @@ if (sameVnode(oldStartVnode, newEndVnode)) {
     nodeOps.nextSibling(oldEndVnode.elm)
     )
   oldStartVnode = oldCh[++oldStartIdx]
-  newEndVnode = newCh[--newEndIdx]    
+  newEndVnode = newCh[--newEndIdx]
 }
 ```
 
@@ -115,7 +114,7 @@ if (sameVnode(oldEndVnode, newStartVnode)) {
   canMove &&
     nodeOps.insertBefore(parentElm, oldEndVnode.elm, oldStartVnode.elm)
   oldEndVnode = oldCh[--oldEndIdx]
-  newStartVnode = newCh[++newStartIdx]   
+  newStartVnode = newCh[++newStartIdx]
 }
 ```
 
@@ -168,7 +167,7 @@ if (sameVnode(oldEndVnode, newStartVnode)) {
   newStartVnode = newCh[++newStartIdx]
 ```
 
-以 newStartVnode 的 key 为标记，在旧子节点中寻找相同 key 的 vnode，如果找到了，则执行 patchVnode 函数，然后将旧子节点中对应位置的 vnode 标记为 undefined，表示该 vnode 已经处理过了。
+以 newStartVnode 的 key 为标记，在旧子节点中寻找相同 key 的 vnode，如果找到了，则执行 patchVnode 函数，<font color=red>然后将旧子节点中对应位置的 vnode 标记为 undefined，表示该 vnode 已经处理过了</font>。
 
 如果没找到，则说明是新元素，则执行 createElm 函数，创建新元素。
 
@@ -177,9 +176,7 @@ if (sameVnode(oldEndVnode, newStartVnode)) {
 - 旧子节点中没有新子节点中的 key，则说明是新元素，执行 createElm 函数创建新元素。
 - 旧子节点中有新子节点中的 key，则说明是旧元素，执行 patchVnode 函数更新旧元素。
 
-
-总结：前面 5 步都是位于循环中的，循环跳出后，需要处理剩余的节点。
-
+<font color=red>总结：前面 5 步都是位于循环中的，循环跳出后，需要处理剩余的节点。</font>
 
 ### 1.6 剩余节点的处理
 
@@ -201,6 +198,8 @@ if (oldStartIdx > oldEndIdx) {
 }
 ```
 
-处理剩余节点，如果新子节点还有剩余，则执行 addVnodes 函数，将剩余的新子节点添加到 DOM 中。
+处理剩余节点：
+
+如果新子节点还有剩余，则执行 addVnodes 函数，将剩余的新子节点添加到 DOM 中。
 
 如果旧子节点还有剩余，则执行 removeVnodes 函数，将剩余的旧子节点从 DOM 中移除。
