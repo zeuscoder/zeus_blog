@@ -3,22 +3,26 @@ title: JS：浅析 Vue3.0
 date: 2020-12-05 17:24:31
 tags:
 ---
-Vue 3.X，又是一次新的开始，更快更小更方便。
+Vue 3.X，又是一次新的开始，更快更小更好用。
 
 <!-- more -->
 
-`<font color=red>`**要显示一个完整的 vue 页面，关键的两部分是围绕 render 和 renderer 两个函数！！！**`</font>`
+本文源码基于 vue v3.3.0 版本
 
-![alt text](/images/vue-next/summary.png)
+<font color=red>**要显示一个完整的 vue 页面，关键的两部分是围绕 render 和 renderer 两个函数！！！**</font>
 
-流程图
-![Alt text](/images/vue-next/image-1.png)
 
 **关键词：Reactivity（Proxy & Reflect、handler、Effect、computed、watch）、Compiler（compile、parse、transform、codegen）、Renderer（render）、VNode（VDom）、Diff。**
 
-辅助工具：[Vue SFC Playground](https://play.vuejs.org/)
+辅助工具：
+
+查看 SFC 文件编译内容：[Vue SFC Playground](https://play.vuejs.org/)
+
+查看 template 转化为 render 函数：[Vue Template Explorer (vuejs.org)](https://template-explorer.vuejs.org/#eyJzcmMiOiI8ZGl2PkhlbGxvIFdvcmxkPC9kaXY+XG48cD57e21zZyArICczMyd9fTwvcD4iLCJvcHRpb25zIjp7fX0=)
 
 ## 浓缩版知识点
+
+![alt text](/images/vue-next/summary.png)
 
 从上图中，我们可以概览Vue3的新特性:
 
@@ -54,10 +58,18 @@ Vue 3.X，又是一次新的开始，更快更小更方便。
 
 ![alt text](/images/vue-next/renderer.png)
 
-### 更接近原生
+### 更容易使用
 
 - 响应式 Api 暴露出来
 - 轻松识别组件重新渲染原因
+
+### 新增特性
+
+- Fragment
+- Teleport
+- composition Api
+- createRenderer
+- Suspense
 
 ## 详细知识点
 
@@ -87,14 +99,26 @@ watch deep true
 
 异步任务队列的设计
 
+### 虚拟 DOM
+
+核心入口源码位置：`/packages/runtime-core/src/renderer.ts`
+
+渲染器中真正完成组件渲染任务的是 `mountComponent` 函数
+
 ### 模版编译
 
-AST 对象根节点其实是一个虚拟节点，它并不会映射到一个具体节点
+<font color=red>Vue.js 内部需要把 template 编译生成 render 函数，这就是 Vue.js 的编译过程。
+</font>
 
-那么，为什么要设计一个虚拟节点呢？
+![alt text](/images/vue-next/compiler.jpeg)
 
-因为 Vue.js 3.0 和 Vue.js 2.x 有一个很大的不同——Vue.js 3.0 支持了 Fragment 的语法，即组件可以有多个根节点
+Vue.js 模板编译器的基本结构和工作流程，它主要由三个部分组成：
 
+- 用来将模板字符串解析为模板 AST 的解析器（parser）；
+- 用来将模板 AST 转换为 JavaScript AST 的转换器（transformer）；
+- 用来根据 JavaScript AST 生成渲染函数代码的生成器（generator）。
+
+核心入口源码位置：`/packages/compiler-core/src/compile.ts`
 
 ```javascript
 function baseCompile(template,  options = {}) { 
@@ -119,10 +143,18 @@ function baseCompile(template,  options = {}) {
 }   
 ```
 
+baseCompile 函数主要做三件事情：**解析 template 生成 AST，AST 转换和生成代码**。
+
+#### parse
+
+![alt text](/images/vue-next/compile-parse.jpeg)
+
+核心入口源码位置：`/packages/compiler-core/src/parser.ts`
+
 ```javascript
 function baseParse(content, options = {}) { 
     // 创建解析上下文 
-    const context = createPa  rserContext(content, options) 
+    const context = createParserContext(content, options) 
     const start = getCursor(context) 
 
     // 解析子节点，并创建 AST  
@@ -130,14 +162,43 @@ function baseParse(content, options = {}) {
 } 
 ```
 
+baseParse 主要就做三件事情：**创建解析上下文，解析子节点，创建 AST 根节点**。
+
+
+注意！**AST 对象根节点其实是一个虚拟节点，它并不会映射到一个具体节点。**
+
+那么，为什么要设计一个虚拟节点呢？
+
+因为 Vue.js 3.0 和 Vue.js 2.x 有一个很大的不同——Vue.js 3.0 支持了 Fragment 的语法，即组件可以有多个根节点
+
+#### transform
+
+![alt text](/images/vue-next/compile-transform.jpeg)
+
+核心入口源码位置：`/packages/compiler-core/src/transform.ts`
+
+
+#### generate
+
+![alt text](/images/vue-next/compile-generate.jpeg)
+
+核心入口源码位置：`/packages/compiler-core/src/codegen.ts`
+
+
+
+
+
+
+
+
+
+
 我们知道在组件的渲染过程中，会通过 renderComponentRoot 方法渲染子树 vnode，然后再把子树 vnode patch 生成 DOM。renderComponentRoot 内部主要通过执行组件实例的 render 函数，创建生成子树 vnode
 
 
 你可能会有疑问，为什么 Vue.js 2.x 编译的结果没有 _ctx 前缀呢？这是因为 Vue.js 2.x 的编译结果使用了”黑魔法“ with，比如上述模板，在 Vue.js 2.x 最终编译的结果：`with(this){return _s(msg + test)}`。
 
 它利用 with 的特性动态去 this 中查找 msg 和 test 属性，所以不需要手动加前缀。
-
-[Vue Template Explorer (vuejs.org)](https://template-explorer.vuejs.org/#eyJzcmMiOiI8ZGl2PkhlbGxvIFdvcmxkPC9kaXY+XG48cD57e21zZyArICczMyd9fTwvcD4iLCJvcHRpb25zIjp7fX0=)
 
 
 createRootCodegen 做的事情很简单，就是为 root 这个虚拟的 AST 根节点创建一个代码生成节点，如果 root 的子节点 children 是单个元素节点，则将其转换成一个 Block，把这个 child 的 codegenNode 赋值给 root 的 codegenNode。
@@ -168,164 +229,17 @@ const patchElement = (n1, n2, parentComponent, parentSuspense, isSVG, optimized)
 
 
 
+## 终结版流程图
 
-leetcode 接雨水算法
+建议下载到本地观看，点击下面图片预览：
 
-Vue.js 的内部实现一定是命令式的，而暴露给用户的却更加声明式。(傻瓜式)
+![Alt text](/images/vue-next/all-process.png)
 
-声明式代码的性能不优于命令式代码的性能。
 
-而框架设计者要做的就是：在保持可维护性的同时让性能损失最小化。
+参考文章：
 
-声明式代码的更新性能消耗 = 找出差异的性能消耗 + 直接修改的性能消耗
-虚拟 DOM 的意义就在于使找出差异的性能消耗最小化
+[Vue.js 3.0 核心源码内参](https://kaiwu.lagou.com/course/courseInfo.htm?courseId=946#/detail/pc?id=7647)
 
-当设计一个框架的时候，我们有三种选择：纯运行时的、运行时 +编译时的或纯编译时的。
+[Vue3.0的设计目标是什么？](https://vue3js.cn/interview/vue/vue3_vue2.html#%E5%93%AA%E4%BA%9B%E5%8F%98%E5%8C%96)
 
-你编写了一个叫作 Compiler 的程序，它的作用就是把HTML 字符串编译成树型结构的数据对象，于是交付给用户去用了。
 
-01 const html = `02 <div> 03   <span>hello world</span> 04 </div> 05`
-06 // 调用 Compiler 编译得到树型结构的数据对象
-07 const obj = Compiler(html)
-08 // 再调用 Render 进行渲染
-09 Render(obj, document.body)
-
-这时我们的框架就变成了一个运行时 + 编译时的框架
-
-其中 Svelte 就是纯编译时的框架
-
-Vue.js 3 仍然保持了运行时 + 编译时的架构
-
-并总结出 Vue.js 3是一个编译时 + 运行时的框架（官网的编译和运行时版本）
-
-热更新（hot module replacement，HMR）需要框架层面的支持，我们是否也应该考虑？
-
-所以在框架设计和开发过程中，提供友好的警告信息至关重要。
-
-Vue.js 3 的源码中，你可以搜索到名为 initCustomFormatter 的函数，该函数就是用来在开发环境下初始化自定义 formatter 的。（小技巧）
-
-在开发环境中为用户提供友好的警告信息的同时，不会增加生产环境代码的体积。
-
-if（false）的代码会被 tree-shaking
-
-什么是 Tree-Shaking 呢？在前端领域，这个概念因 rollup.js 而普及。简单地说，Tree-Shaking 指的就是消除那些永远不会被执行的代码，也就是排除 dead code，现在无论是 rollup.js 还是webpack，都支持 Tree-Shaking。
-
-想要实现 Tree-Shaking，必须满足一个条件，即模块必须是 ESM（ES Module），因为 Tree-Shaking 依赖 ESM 的静态结构。
-
-这就涉及 Tree-Shaking 中的第二个关键点——副作用。如果一个函数调用会产生副作用，那么就不能将其移除。
-
-在编写框架的时候需要合理使用/*#__PURE__*/ 注释。如果你去搜索 Vue.js 3 的源码，会发现它大量使用了该注释，
-
-特性开关
-
-01 // support for 2.x options
-02 if (__FEATURE_OPTIONS_API__) {
-03   currentInstance = instance
-04   pauseTracking()
-05   applyOptions(instance, Component)
-06   resetTracking()
-07   currentInstance = null
-08 }
-
-为了兼容 Vue.js 2，在 Vue.js 3 中仍然可以使用选项 API 的方式编写代码。但是如果明确知道自己不会使用选项 API，用户就可以使用 __VUE_OPTIONS_API__ 开关来关闭该特性，这样在打包的时候 Vue.js 的这部分代码就不会包含在最终的资源中，从而减小资源体积。
-
-callWithErrorHandling
-
-01 import App from 'App.vue'
-02 const app = createApp(App)
-03 app.config.errorHandler = () => {
-04   // 错误处理程序
-05 }
-
-如何衡量一个框架对 TS 类型支持的水平呢
-
-除了要花大力气做类型推导，从而做到更好的类型支持外，还要考虑对 TSX 的支持，后续章节会详细讨论这部分内容。
-
-编译器和渲染器
-
-所以 h 函数就是一个辅助创建虚拟 DOM 的工具函数，仅此而已。
-一个组件要渲染的内容是通过渲染函数来描述的，也就是上面代码中的 render 函数，Vue.js 会根据组件的 render 函数的返回值拿到虚拟 DOM，然后就可以把组件的内容渲染出来了。
-
-渲染器的作用就是把虚拟 DOM 渲染为真实 DOM
-
-区分 render（虚拟dom）和 renderer（真实dom） 两者
-
-其实不然，别忘了我们现在所做的还仅仅是创建节点，渲染器的精髓都在更新节点的阶段
-
-其实不然，别忘了我们现在所做的还仅仅是创建节点，渲染器的精髓都在更新节点的阶段
-
-01 function mountComponent(vnode, container) {
-02   // 调用组件函数，获取组件要渲染的内容（虚拟 DOM）
-03   const subtree = vnode.tag()
-04   // 递归地调用 renderer 渲染 subtree
-05   renderer(subtree, container)
-06 }
-
-那么模板是如何工作的呢？这就要提到 Vue.js 框架中的另外一个重要组成部分：编译器。
-
-所以，无论是使用模板还是直接手写渲染函数，对于一个组件来说，它要渲染的内容最终都是通过渲染函数产生的，然后渲染器再把渲染函数返回的虚拟 DOM 渲染为真实 DOM，这就是模板的工作原理，也是 Vue.js 渲染页面的流程。
-
-组件的实现依赖于渲染器，模板的编译依赖于编译器，并且编译后生成的代码是根据渲染器和虚拟 DOM 的设计决定的，因此 Vue.js 的各个模块之间是互相关联、互相制约的，共同构成一个有机整体。因此，我们在学习 Vue.js 原理的时候，应该把各个模块结合到一起去看，才能明白到底是怎么回事。
-
-编译时：【静态节点标记】
-
-Vue.js 的模板是有特点的，拿上面的模板来说，我们一眼就能看出其中 id="foo" 是永远不会变化的，而:class="cls" 是一个 v-bind 绑定，它是可能发生变化的。所以编译器能识别出哪些是静态属性，哪些是动态属性，在生成代码的时候完全可以附带这些信息：
-
-01 render() {
-02   return {
-03     tag: 'div',
-04     props: {
-05       id: 'foo',
-06       class: cls
-07     },
-08     patchFlags: 1 // 假设数字 1 代表 class 是动态的
-09   }
-10 }
-
-响应式数据与副作用函数
-
-接着上文思考，如何才能让 obj 变成响应式数据呢？通过观察我们能发现两点线索：
-● 当副作用函数 effect 执行时，会触发字段 obj.text 的读取操作；
-● 当修改 obj.text 的值时，会触发字段 obj.text 的设置操作。
-
-现在问题的关键变成了我们如何才能拦截一个对象属性的读取和设置操作。
-在 ES2015 之前，只能通过 Object.defineProperty 函数实现，这也是 Vue.js 2 所采用的方式。在 ES2015+ 中，我们可以使用代理对象 Proxy 来实现，这也是 Vue.js 3 所采用的方式。
-
-01 // 存储副作用函数的桶
-02 const bucket = new Set()
-03
-04 // 原始数据
-05 const data = { text: 'hello world' }
-06 // 对原始数据的代理
-07 const obj = new Proxy(data, {
-08   // 拦截读取操作
-09   get(target, key) {
-10     // 将副作用函数 effect 添加到存储副作用函数的桶中
-11     bucket.add(effect)
-12     // 返回属性值
-13     return target[key]
-14   },
-15   // 拦截设置操作
-16   set(target, key, newVal) {
-17     // 设置属性值
-18     target[key] = newVal
-19     // 把副作用函数从桶里取出并执行
-20     bucket.forEach(fn => fn())
-21     // 返回 true 代表设置操作成功
-22     return true
-23   }
-24 })
-
-从上一节的例子中不难看出，一个响应系统的工作流程如下：
-● 当读取操作发生时，将副作用函数收集到“桶”中；
-● 当设置操作发生时，从“桶”中取出副作用函数并执行。
-
-01 // 用一个全局变量存储被注册的副作用函数
-02 let activeEffect
-03 // effect 函数用于注册副作用函数
-04 function effect(fn) {
-05   // 当调用 effect 注册副作用函数时，将副作用函数 fn 赋值给 activeEffect
-06   activeEffect = fn
-07   // 执行副作用函数
-08   fn()
-09 }
