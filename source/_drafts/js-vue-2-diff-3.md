@@ -7,9 +7,12 @@ Vue 3.X，又是一次新的开始，更快更小更方便。
 
 <!-- more -->
 
-<font color=red>**要显示一个完整的 vue 页面，关键的两部分是围绕 render 和 renderer 两个函数！！！**</font>
+`<font color=red>`**要显示一个完整的 vue 页面，关键的两部分是围绕 render 和 renderer 两个函数！！！**`</font>`
 
 ![alt text](/images/vue-next/summary.png)
+
+流程图
+![Alt text](/images/vue-next/image-1.png)
 
 **关键词：Reactivity（Proxy & Reflect、handler、Effect、computed、watch）、Compiler（compile、parse、transform、codegen）、Renderer（render）、VNode（VDom）、Diff。**
 
@@ -86,9 +89,57 @@ watch deep true
 
 ### 模版编译
 
-* 简单 Diff
-* 双端 Diff
-* 快速 Diff
+AST 对象根节点其实是一个虚拟节点，它并不会映射到一个具体节点
+
+那么，为什么要设计一个虚拟节点呢？
+
+因为 Vue.js 3.0 和 Vue.js 2.x 有一个很大的不同——Vue.js 3.0 支持了 Fragment 的语法，即组件可以有多个根节点
+
+
+```javascript
+function baseCompile(template,  options = {}) { 
+  const prefixIdentifiers = false 
+  // 解析 template 生成 AST 
+  const ast = isString(template) ? baseParse(template, options) : template 
+  const [nodeTransforms, directiveTransforms] = getBaseTransformPreset() 
+  // AST 转换 
+  transform(ast, extend({}, options, { 
+    prefixIdentifiers, 
+    nodeTransforms: [ 
+      ...nodeTransforms, 
+      ...(options.nodeTransforms || []) 
+    ], 
+    directiveTransforms: extend({}, directiveTransforms, options.directiveTransforms || {} 
+    ) 
+  })) 
+  // 生成代码 
+  return generate(ast, extend({}, options, { 
+    prefixIdentifiers 
+  })) 
+}   
+```
+
+```javascript
+function baseParse(content, options = {}) { 
+    // 创建解析上下文 
+    const context = createPa  rserContext(content, options) 
+    const start = getCursor(context) 
+
+    // 解析子节点，并创建 AST  
+    return createRoot(parseChildren(context, 0 /* DATA */, []), getSelection(context, start)) 
+} 
+```
+
+我们知道在组件的渲染过程中，会通过 renderComponentRoot 方法渲染子树 vnode，然后再把子树 vnode patch 生成 DOM。renderComponentRoot 内部主要通过执行组件实例的 render 函数，创建生成子树 vnode
+
+
+你可能会有疑问，为什么 Vue.js 2.x 编译的结果没有 _ctx 前缀呢？这是因为 Vue.js 2.x 的编译结果使用了”黑魔法“ with，比如上述模板，在 Vue.js 2.x 最终编译的结果：`with(this){return _s(msg + test)}`。
+
+它利用 with 的特性动态去 this 中查找 msg 和 test 属性，所以不需要手动加前缀。
+
+[Vue Template Explorer (vuejs.org)](https://template-explorer.vuejs.org/#eyJzcmMiOiI8ZGl2PkhlbGxvIFdvcmxkPC9kaXY+XG48cD57e21zZyArICczMyd9fTwvcD4iLCJvcHRpb25zIjp7fX0=)
+
+
 
 leetcode 接雨水算法
 
