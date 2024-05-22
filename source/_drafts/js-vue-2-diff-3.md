@@ -140,6 +140,34 @@ function baseParse(content, options = {}) {
 [Vue Template Explorer (vuejs.org)](https://template-explorer.vuejs.org/#eyJzcmMiOiI8ZGl2PkhlbGxvIFdvcmxkPC9kaXY+XG48cD57e21zZyArICczMyd9fTwvcD4iLCJvcHRpb25zIjp7fX0=)
 
 
+createRootCodegen 做的事情很简单，就是为 root 这个虚拟的 AST 根节点创建一个代码生成节点，如果 root 的子节点 children 是单个元素节点，则将其转换成一个 Block，把这个 child 的 codegenNode 赋值给 root 的 codegenNode。
+
+如果 root 的子节点 children 是多个节点，则返回一个 fragement 的代码生成节点，并赋值给 root 的 codegenNode。
+
+
+```javascript
+const patchElement = (n1, n2, parentComponent, parentSuspense, isSVG, optimized) => {
+  const el = (n2.el = n1.el)
+  const oldProps = (n1 && n1.props) || EMPTY_OBJ
+  const newProps = n2.props || EMPTY_OBJ
+  // 更新 props
+  patchProps(el, n2, oldProps, newProps, parentComponent, parentSuspense, isSVG)
+  const areChildrenSVG = isSVG && n2.type !== 'foreignObject'
+  // 更新子节点
+  if (n2.dynamicChildren) {
+    patchBlockChildren(n1.dynamicChildren, n2.dynamicChildren, currentContainer, parentComponent, parentSuspense, isSVG);
+  }
+  else if (!optimized) {
+    patchChildren(n1, n2, currentContainer, currentAnchor, parentComponent, parentSuspense, isSVG);
+  }
+}
+```
+
+而实际上，如果这个 vnode 是一个 Block vnode，那么我们不用去通过 patchChildren 全量比对，只需要通过 patchBlockChildren 去比对并更新 Block 中的动态子节点即可。
+
+
+
+
 
 leetcode 接雨水算法
 
