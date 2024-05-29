@@ -205,7 +205,6 @@ createRootCodegen 做的事情很简单，就是为 root 这个虚拟的 AST 根
 
 如果 root 的子节点 children 是多个节点，则返回一个 fragement 的代码生成节点，并赋值给 root 的 codegenNode。
 
-
 ```javascript
 const patchElement = (n1, n2, parentComponent, parentSuspense, isSVG, optimized) => {
   const el = (n2.el = n1.el)
@@ -230,6 +229,16 @@ const patchElement = (n1, n2, parentComponent, parentSuspense, isSVG, optimized)
 
 
 ## 终结版流程图
+
+初始化入口：
+
+```javascript
+import { createApp, Directive } from 'vue'
+import router from './router'
+import { store } from './store'
+
+app.use(store).use(router).mount('#app')
+```
 
 建议下载到本地观看，点击下面图片预览：
 

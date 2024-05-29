@@ -503,12 +503,14 @@ function getSequence(arr: number[]): number[] {
     if (arrI !== 0) {
       j = result[result.length - 1]
       if (arr[j] < arrI) {
+        // 存储在 result 更新前的最后一个索引的值
         p[i] = j
         result.push(i)
         continue
       }
       u = 0
       v = result.length - 1
+      // 二分搜索，查找比 arrI 小的节点，更新 result 的值
       while (u < v) {
         c = (u + v) >> 1
         if (arr[result[c]] < arrI) {
@@ -527,6 +529,8 @@ function getSequence(arr: number[]): number[] {
   }
   u = result.length
   v = result[u - 1]
+
+  // 回溯数组 p，找到最终的索引
   while (u-- > 0) {
     result[u] = v
     v = p[v]
