@@ -213,7 +213,11 @@ React 源码中也有多处以 rootFiber 代指 current 对象，因此下文中
 
 ![Lark20201120-182610.png](https://s0.lgstatic.com/i/image/M00/6F/F8/Ciqc1F-3mh-AZrlvAABgy8S1u44402.png)
 
-fiberRoot 的关联对象是真实 DOM 的容器节点；而 rootFiber 则作为虚拟 DOM 的根节点存在。这两个节点，将是后续整棵 Fiber 树构建的起点。
+**fiberRoot 的关联对象是真实 DOM 的容器节点；而 rootFiber 则作为虚拟 DOM 的根节点存在。这两个节点，将是后续整棵 Fiber 树构建的起点。**
+
+！！！！！！！！！！！！！！
+
+![1.png](https://s0.lgstatic.com/i/image/M00/71/49/CgqCHl-91EqAJlftAAB6KmeoTMw529.png)
 
 u**pdateContainer 的逻辑相对来说丰富了点，但大部分逻辑也是在干杂活，它做的最关键的事情可以总结为三件：**
 
@@ -287,3 +291,174 @@ function requestUpdateLane(fiber) {
 ![Drawing 0.png](https://s0.lgstatic.com/i/image/M00/71/0B/CgqCHl-8xCmAcvVyAADtTCzN0RM929.png)
 
 图中，performSyncWorkOnRoot 标志着 render 阶段的开始，finishSyncRender 标志着 render 阶段的结束。这中间包含了大量的 beginWork、completeWork 调用栈，正是 render 的工作内容。
+
+
+![1.png](https://s0.lgstatic.com/i/image/M00/71/49/CgqCHl-91EqAJlftAAB6KmeoTMw529.png)
+
+实锤了，workInProgress 节点其实就是 current 节点（即 rootFiber）的副本。
+
+
+**核心核心：performUnitOfWork!!!!!!!!!!!**
+
+```javascript
+function workLoopSync() {
+  // workInProgress 是一个 fiber 对象
+  // 它的值不为 null 意味着该 fiber 对象上仍然有更新要执行
+  // while 方法支撑 render 阶段 所有 fiber 节点的构建
+  while (workInProgress !== null) {
+    workInProgress = performUnitOfWork(workInProgress);
+  }
+}
+```
+
+
+workLoopSync 做的事情就是通过 while 循环反复判断 workInProgress 是否为空，并在不为空的情况下针对它执行 performUnitOfWork 函数。
+
+**而 performUnitOfWork 函数将触发对 beginWork 的调用，进而实现对新 Fiber 节点的创建。若 beginWork 所创建的 Fiber 节点不为空，则 performUniOfWork 会用这个新的 Fiber 节点来更新 workInProgress 的值，为下一次循环做准备。**
+
+通过循环调用 performUnitOfWork 来触发 beginWork，新的 Fiber 节点就会被不断地创建。当 workInProgress 终于为空时，说明没有新的节点可以创建了，也就意味着已经完成对整棵 Fiber 树的构建。
+
+
+beginWork 源码太长不看版的重点总结：
+
+beginWork 的入参是一对用 alternate 连接起来的 workInProgress 和 current 节点；
+
+beginWork 的核心逻辑是根据 fiber 节点（workInProgress）的 tag 属性的不同，调用不同的节点创建函数。
+
+
+这里需要说明的一点是：rootFiber 作为 Fiber 树的根节点，它并没有一个确切的 ReactElement 与之映射。结合 JSX 结构来看，我们可以将其理解为是 JSX 中根组件的父节点。课时所给出的 Demo 中，组件编码如下：
+
+
+reconcileChildren 函数上下文里的 workInProgress 就是 rootFiber 节点。那么此时，我们就将新创建的 App Fiber 节点和 rootFiber 关联了起来，整个 Fiber 树如下图所示：
+
+![3.png](https://s0.lgstatic.com/i/image/M00/71/3E/Ciqc1F-91MmARvQRAADFJC1K20o629.png)
+
+beginWork 所触发的调用流程总结进一张大图：
+
+![7.png](https://s0.lgstatic.com/i/image/M00/71/47/Ciqc1F-97fSAYLUIAAGBjhvNylg581.png)
+
+![Drawing 15.png](https://s0.lgstatic.com/i/image/M00/71/12/CgqCHl-80ZuAA1HAAAEBle-yZFM332.png)
+
+共有 7 个节点，若你点击展开查看每个节点的内容，就会发现这 7 个节点其实分别是：
+
+rootFiber（当前 Fiber 树的根节点）
+
+App FiberNode（App 函数组件对应的节点）
+
+class 为 App 的 DOM 元素对应的节点，其内容如下图所示
+
+
+```javascript
+function App() {
+
+    return (
+
+      <div className="App">
+
+        <div className="container">
+
+          <h1>我是标题</h1>
+
+          <p>我是第一段话</p>
+
+          <p>我是第二段话</p>
+
+        </div>
+
+      </div>
+
+    );
+
+}
+
+```
+
+![4.png](https://s0.lgstatic.com/i/image/M00/71/49/CgqCHl-91PKANLSRAACt8c-uYAk378.png)
+
+![5.png](https://s0.lgstatic.com/i/image/M00/71/3E/Ciqc1F-91RGAAygAAAEYVWI-PXg439.png)
+
+**只有将 completeWork 和 beginWork 放在一起来看，你才能够真正理解，Fiber 架构下的“深度优先遍历”到底是怎么一回事。**
+
+
+![图片10.png](https://s0.lgstatic.com/i/image/M00/72/29/CgqCHl_A2PuADu50AABVUspw4O0014.png)
+
+
+捋顺思路后，我们直接来提取知识点。关于 completeWork，你需要明白以下几件事。
+
+（1）用一句话来总结 completeWork 的工作内容： **负责处理 Fiber 节点到 DOM 节点的映射逻辑** 。
+
+（2）completeWork 内部有 3 个关键动作：
+
+* **创建**DOM 节点（CreateInstance）
+* 将 DOM 节点**插入**到 DOM 树中（AppendAllChildren）
+* 为 DOM 节点 **设置属性** （FinalizeInitialChildren）
+
+（3） **创建好的 DOM 节点会被赋值给 workInProgress 节点的 stateNode 属性** 。也就是说当我们想要定位一个 Fiber 对应的 DOM 节点时，访问它的 stateNode 属性就可以了。这里我们可以尝试访问运行时的 h1 节点的 stateNode 属性，结果如下图所示：
+
+![Drawing 5.png](https://s0.lgstatic.com/i/image/M00/72/10/Ciqc1F_Ash-AW32XAABIXg8drFo176.png)
+
+（4）将 DOM 节点插入到 DOM 树的操作是通过 appendAllChildren 函数来完成的。
+
+说是将 DOM 节点插入到 DOM 树里去，实际上是将**子 Fiber 节点所对应的 DOM 节点**挂载到其 **父 Fiber 节点所对应的 DOM 节点里去** 。比如说在本讲 Demo 所构建出的 Fiber 树中，h1 节点的父结点是 div，那么 h1 对应的 DOM 节点就理应被挂载到 div 对应的 DOM 节点里去。
+
+
+### completeUnitOfWork —— 开启收集 EffectList 的“大循环”
+
+completeUnitOfWork 的作用是开启一个大循环，在这个大循环中，将会重复地做下面三件事：
+
+1. **针对传入的当前节点，调用 completeWork** ，completeWork 的工作内容前面已经讲过，这一步应该是没有异议的；
+2. 将 **当前节点的副作用链** （EffectList）插入到其 **父节点对应的副作用链** （EffectList）中；
+3. 以当前节点为起点，循环遍历其兄弟节点及其父节点。当遍历到兄弟节点时，将 return 掉当前调用，触发兄弟节点对应的 performUnitOfWork 逻辑；而遍历到父节点时，则会直接进入下一轮循环，也就是重复 1、2 的逻辑。
+
+步骤 1 无须多言，接下来我将为你解读步骤 2 和步骤 3 的含义。
+
+
+**completeUnitOfWork 中处理兄弟节点和父节点的顺序是：先检查兄弟节点是否存在，若存在则优先处理兄弟节点；确认没有待处理的兄弟节点后，才转而处理父节点。这也就意味着 completeWork 的执行是严格自底向上的** ，子节点的 completeWork 总会先于父节点执行。
+
+
+在 render 阶段，我们通过艰难的递归过程来明确“p 节点这里有一处更新”这件事情。按照 React 的设计思路，render 阶段结束后，“找不同”这件事情其实也就告一段落了。 **commit 只负责实现更新，而不负责寻找更新** ，这就意味着我们必须找到一个办法能让 commit 阶段“坐享其成”，能直接拿到 render 阶段的工作成果。而这，正是 **副作用链** （ **effectList** ）的价值所在。
+
+
+
+effectList 链表在 Fiber 节点中是通过 firstEffect 和 lastEffect 来维护的，如下图所示：
+
+![Drawing 10.png](https://s0.lgstatic.com/i/image/M00/72/1C/CgqCHl_AspmALRFDAADaKY8wTqc180.png)首先、
+
+![图片15.png](https://s0.lgstatic.com/i/image/M00/72/1E/Ciqc1F_A2W-AVmmRAABDdji0MoI238.png)
+
+你只需要把握住“根节点（rootFiber）上的 effectList 信息，是 commit 阶段的更新线索”这个结论，就足以将 render 阶段和 commit 阶段串联起来。
+
+
+### commit 阶段工作流简析
+
+
+
+### commit 阶段工作流简析
+
+
+commit 会在 performSyncWorkOnRoot 中被调用，如下图所示：
+
+![Drawing 12.png](https://s0.lgstatic.com/i/image/M00/72/10/Ciqc1F_AsqiAENXWAAF6r2_37Lc521.png)
+
+
+这里的入参 root 并不是 rootFiber，而是 fiberRoot（FiberRootNode）实例。fiberRoot 的 current 节点指向 rootFiber，因此拿到 effectList 对后续的 commit 流程来说不是什么难事。
+
+从流程上来说，commit 共分为 3 个阶段：**before mutation、mutation、layout。**
+
+* before mutation 阶段， **这个阶段 DOM 节点还没有被渲染到界面上去** ，过程中会触发 getSnapshotBeforeUpdate，也会处理 useEffect 钩子相关的调度逻辑。
+* mutation， **这个阶段负责 DOM 节点的渲染** 。在渲染过程中，会遍历 effectList，根据 flags（effectTag）的不同，执行不同的 DOM 操作。
+* layout， **这个阶段处理 DOM 渲染完毕之后的收尾逻辑** 。比如调用 componentDidMount/componentDidUpdate，调用 useLayoutEffect 钩子函数的回调等。除了这些之外，它还会 **把 fiberRoot 的 current 指针指向 workInProgress Fiber 树** 。
+
+关于 commit 阶段的实现细节，感兴趣的同学课下可以参阅 [commit 相关源码](https://github.com/facebook/react/blob/a81c02ac150233bdb5f31380d4135397fb8f4660/packages/react-reconciler/src/ReactFiberWorkLoop.new.js)，这里不再展开讨论。对于 commit，如果你只能记住一个知识点，我希望你记住 **它是一个绝对同步的过程** 。render 阶段可以同步也可以异步，但 commit 一定是同步的。
+
+**fiber 的 diff 逻辑在 reconcileChildren 里。!!!!!!!!!!!!!!!!!!!!!!!**
+
+![图片](https://s6.51cto.com/oss/202303/28/9563a23402d0c71330a2161e76d24cd86fea37.png)
+
+![1717060465387](image/react-memo/1717060465387.png)
+
+
+### current 树 与 workInProgress 树：“双缓冲”模式在 Fiber 架构下的实现
+
+
+就是 current 指针指向它的时候，此时就意味着 commit 阶段已经执行完毕，workInProgress 树变成了那棵呈现在界面上的 current 树。
