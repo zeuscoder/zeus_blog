@@ -462,3 +462,143 @@ commit 会在 performSyncWorkOnRoot 中被调用，如下图所示：
 
 
 就是 current 指针指向它的时候，此时就意味着 commit 阶段已经执行完毕，workInProgress 树变成了那棵呈现在界面上的 current 树。
+
+
+
+
+会发现还是熟悉的配方，还是原来的味道。其实，挂载可以理解为一种特殊的更新，ReactDOM.render 和 setState 一样，也是一种触发更新的姿势。在 React 中，**ReactDOM.render、setState、useState 等方法都是可以触发更新的，**这些方法发起的调用链路很相似，是因为它们最后“殊途同归”，都会通过创建 update 对象来进入同一套更新工作流。
+
+![Drawing 16.png](https://s0.lgstatic.com/i/image/M00/73/A1/Ciqc1F_GIqKAP_3fAABp3EtlwDk160.png)
+
+
+**我们已经知道 Fiber 架构下的异步渲染（即 Concurrent 模式）的核心特征分别是“时间切片”与“优先级调度”。而这两点，也正是 Scheduler 的核心能力。**
+
+这两个函数在内部都是通过调用 unstable_scheduleCallback 方法来执行任务调度的。而 unstable_scheduleCallback 正是 Scheduler（调度器）中导出的一个核心方法，也是本讲的一个重点。
+
+
+```javascript
+  forceFrameRate = function(fps) {
+    if (fps < 0 || fps > 125) {
+      // Using console['error'] to evade Babel and ESLint
+      console['error'](
+        'forceFrameRate takes a positive int between 0 and 125, ' +
+          'forcing framerates higher than 125 fps is not unsupported',
+      );
+      return;
+    }
+    if (fps > 0) {
+      yieldInterval = Math.floor(1000 / fps);
+    } else {
+      // reset the framerate
+      yieldInterval = 5;
+    }
+  };
+```
+
+现在我们来总结一下时间切片的实现原理：React 会根据浏览器的帧率，计算出时间切片的大小，并结合当前时间计算出每一个切片的到期时间。在 workLoopConcurrent 中，while 循环每次执行前，会调用 shouldYield 函数来询问当前时间切片是否到期，若已到期，则结束循环、出让主线程的控制权。
+
+
+我们已经知道，无论是 scheduleSyncCallback 还是 scheduleCallback，最终都是通过调用 unstable_scheduleCallback 来发起调度的。unstable_scheduleCallback 是 Scheduler 导出的一个核心方法，它将结合任务的优先级信息为其执行不同的调度逻辑。
+
+
+```javascript
+// 若当前时间小于开始时间，说明该任务可延时执行(未过期）
+
+  if (startTime > currentTime) {
+
+    // 将未过期任务推入 "timerQueue"
+
+    newTask.sortIndex = startTime;
+
+    push(timerQueue, newTask);
+
+
+
+    // 若 taskQueue 中没有可执行的任务，而当前任务又是 timerQueue 中的第一个任务
+
+    if (peek(taskQueue) === null && newTask === peek(timerQueue)) {
+
+      ......
+
+          // 那么就派发一个延时任务，这个延时任务用于将过期的 task 加入 taskQueue 队列
+
+      requestHostTimeout(handleTimeout, startTime - currentTime);
+
+    }
+
+  } else {
+
+    // else 里处理的是当前时间大于 startTime 的情况，说明这个任务已过期
+
+    newTask.sortIndex = expirationTime;
+
+    // 过期的任务会被推入 taskQueue
+
+    push(taskQueue, newTask);
+
+    ......
+
+
+
+    // 执行 taskQueue 中的任务
+
+    requestHostCallback(flushWork);
+
+  }
+
+```
+
+![Drawing 32.png](https://s0.lgstatic.com/i/image/M00/73/AE/CgqCHl_GIzeAHilIAAFT8rmskL8314.png)
+
+
+
+W3C 标准约定了一个事件的传播过程要经过以下 3 个阶段：
+
+1. 事件捕获阶段
+2. 目标阶段
+3. 事件冒泡阶段
+
+**在原生 DOM 中，事件委托（也叫事件代理）是一种重要的性能优化手段。**
+
+
+像这样利用事件的冒泡特性， **把多个子元素的同一类型的监听逻辑，合并到父元素上通过一个监听函数来管理的行为，就是事件委托** 。通过事件委托，我们可以减少内存开销、简化注册步骤，大大提高开发效率。
+
+这绝妙的事件委托，正是 React**合成事件**的灵感源泉。
+
+
+![Drawing 8.png](https://s0.lgstatic.com/i/image/M00/78/87/CgqCHl_KCjaALFKsAAHNjlT3rrw342.png)
+
+
+![Drawing 15.png](https://s0.lgstatic.com/i/image/M00/78/7C/Ciqc1F_KCneAfMZbAAE9PxK7X3w813.png)
+
+对 React 来说，事件委托主要的作用应该在于帮助 React  **实现了对所有事件的中心化管控** 。
+
+
+
+。本讲我将带你认识其中最关键的 3 个思路：
+
+1. **使用 shouldComponentUpdate 规避冗余的更新逻辑**
+2. **PureComponent + Immutable.js**
+3. **React.memo 与 useMemo**
+
+PureComponent 与 Component 的区别点，就在于它内置了对 shouldComponentUpdate 的实现：PureComponent 将会在 shouldComponentUpdate 中对组件更新前后的 props 和 state 进行 **浅比较** ，并根据浅比较的结果，决定是否需要继续更新流程。
+
+
+
+而在第 13 ~ 16 讲的分析中，我们其实就已经在源码的各个角落见过“Lane”这个概念，也分析过一些和 Lane 相关的一些函数。初学 React 源码的同学由此可能会很自然地认为：优先级就应该是用 Lane 来处理的。但事实上，React 16 中处理优先级采用的是 expirationTime 模型。
+
+expirationTime 模型使用 expirationTime（一个时间长度） 来描述任务的优先级；而 Lane 模型则使用二进制数来表示任务的优先级：
+
+> lane 模型通过将不同优先级赋值给一个位，通过 31 位的位运算来操作优先级。
+
+Lane 模型提供了一个新的优先级排序的思路，相对于 expirationTime 来说，它对优先级的处理会更细腻，能够覆盖更多的边界条件。
+
+
+
+**React 16之前 ，reconcilation 算法实际上是递归，想要中断递归是很困难的，React 16 开始使用了循环来代替之前的递归.**
+
+
+**老的 Fiber 链表（树节点）和新的 JSX 虚拟dom 节点做对比**，生成新的 Fiber 树，这个过程就是diff
+
+
+![1717151336419](image/react-memo/1717151336419.png)
