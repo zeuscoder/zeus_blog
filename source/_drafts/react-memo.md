@@ -1,3 +1,13 @@
+---
+title: JS：React
+date: 2020-12-05 17:24:31
+tags:
+---
+
+React Memo
+
+<!-- more -->
+
 ```javascript
 export function createElement(type, config, children)
 

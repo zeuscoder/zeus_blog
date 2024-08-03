@@ -3,8 +3,8 @@ title: JS：浅析 Vuex
 date: 2020-03-19 23:24:54
 tags:
 ---
-
 [Vuex](https://vuex.vuejs.org/zh/) 是一个专为 Vue.js 应用程序开发的**状态管理模式**。它采用集中式存储管理应用的所有组件的状态，并以相应的规则保证状态以一种可预测的方式发生变化。
+
 <!-- more -->
 
 ![vuex](/images/js-vuex/vuex.png)
@@ -70,7 +70,7 @@ function applyMixin(Vue) {
 }
 ```
 
-`install` 方法是在全局 `beforeCreate` 钩子函数 `mixin` 了 `vuexInit` 方法，把根 `Vue` 实例的 `options.store` 保存在所有组件的 `this.$store` 中。`options.store` 就是我们在 `new Vue({store})` 时传入的 `store` 实例，因此，我们在所有的组件都可以通过 `this.$store` 访问到这个实例。
+`install` 方法是在全局 `beforeCreate` 钩子函数 `mixin` 了 `vuexInit` 方法，把根 `Vue` 实例的 `options.store` 保存在所有组件的 `this.$store` 中。`options.store` 就是我们在 `new Vue({store})` 时传入的 `store` 实例，**因此，我们在所有的组件都可以通过 `this.$store` 访问到这个实例**。
 
 ### Store
 
@@ -87,7 +87,7 @@ const store = new Vuex.Store({
 })
 ```
 
-`Vuex` 的 `Store` 对象的构造函数接收一个对象参数 `options`，其包含 `state`、`getters`、`mutations`、`actions`、`modules` 等 Vuex 的核心概念。源代码 `src/store.js`：  
+`Vuex` 的 `Store` 对象的构造函数接收一个对象参数 `options`，其包含 `state`、`getters`、`mutations`、`actions`、`modules` 等 Vuex 的核心概念。源代码 `src/store.js`：
 
 ```Javascript
 export class Store {
@@ -112,7 +112,7 @@ export class Store {
 }
 ```
 
-Store 的实例化过程拆成3个部分，分别是`初始化模块`、`安装模块`和`初始化 store._vm`。
+Store 的实例化过程拆成3个部分，分别是 `初始化模块`、`安装模块`和 `初始化 store._vm`。
 
 #### 初始化模块
 
